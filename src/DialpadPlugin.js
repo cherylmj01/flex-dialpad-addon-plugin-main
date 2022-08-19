@@ -9,7 +9,8 @@ import registerCustomNotifications from './notifications';
 import { loadExternalTransferInterface } from './components/ExternalTransfer';
 import { loadInternalCallInterface } from './components/InternalCall';
 import { CustomizationProvider } from "@twilio-paste/core/customization";
-import { ParticipantType, ReservationEvents } from './enums'
+import { ParticipantType, ReservationEvents } from './enums/enums'
+import FlexState from './states/FlexState';
 
 const PLUGIN_NAME = 'DialpadPlugin';
 
@@ -38,15 +39,24 @@ export default class DialpadPlugin extends FlexPlugin {
 
     );
 
+    // Remove cookies for any reservation not stored in local storage
+    FlexState.workerTasks.forEach(reservation => {
+      const existing_reservation = reservation;
+      const existing_reservation_sid = existing_reservation.sid;
+      let local_storage_hang_up_by_value = JSON.parse(window.localStorage.getItem('hang_up_by'));
+      if (local_storage_hang_up_by_value && Object.values(local_storage_hang_up_by_value).indexOf(existing_reservation_sid) === -1) {
+        localStorage.removeItem('hang_up_by');
+      }
+    });
+
     flex.Actions.addListener("beforeHangupCall", (payload) => {
       console.log('Testing for this');
       console.log('Hang up is by', payload);
       console.log('Payload sid is',payload.sid)
       const agent = "agent";
       const sid = payload.sid;
-      const reservation_hang_up_value = {
-        sid: agent
-      }
+      let reservation_hang_up_value = {};
+      reservation_hang_up_value[agent] = sid;
       localStorage.setItem('hang_up_by', JSON.stringify(reservation_hang_up_value));
     });
 
@@ -59,39 +69,51 @@ export default class DialpadPlugin extends FlexPlugin {
 
 
     const handleReservationWrapup = async (reservation) => {
-      console.log('WrapUp phase');
+      console.log('Task details are');
       const task = TaskHelper.getTaskByTaskSid(reservation.sid);
       const { attributes } = task;
       let newAttributes;
       console.log('Task details are',task);
-      const { participants } = task.conference
-      const customer = participants.find(p => p.participantType === "customer");
-      console.log('The customer has:', customer.status);
+      // const { participants } = task.conference
+      // const customer = participants.find(p => p.participantType === "customer");
+      // console.log('The customer has:', customer.status);
 
       // console.log('participant details are ',participants);
       // console.log('participant details are ',customer);
 
       // check local storage for hang_up_by value
-      const local_storage_hang_up_by_value = localStorage.getItem('hang_up_by');
-      console.log('Local storage value is', local_storage_hang_up_by_value);
+      const local_storage_hang_up_by_value = JSON.parse(window.localStorage.getItem('hang_up_by'));
+      // let keys = Object.keys(local_storage_hang_up_by_value);
+      console.log('zzzz Local storage value is', local_storage_hang_up_by_value); 
+ 
 
       // if the value exists and the participants array has both the customer and the agent
       // then assign hang_up_by = 'agent'
       if (local_storage_hang_up_by_value) {
-        console.log('We have value', reservation);
-        hangUpBy = local_storage_hang_up_by_value;
+        console.log('We have value', local_storage_hang_up_by_value);
+        hangUpBy = "agent";
         newAttributes = {
           ...attributes,
           hang_up_by: hangUpBy
         };
         
+        await task.setAttributes(newAttributes);
       } 
-      
-      await task.setAttributes(newAttributes);
+
+      console.log('New attributes are',task);
     };
 
     const handleReservationCompletion = async (reservation) => {
-      console.log('Complete Task phase');
+      const completedReservationSid = reservation.sid;
+      console.log('Complete Task phase',reservation);
+      let local_storage_hang_up_by_value = JSON.parse(window.localStorage.getItem('hang_up_by'));
+      console.log('Value for cookie8790809 is',local_storage_hang_up_by_value);
+      console.log("Reservation cookie value",local_storage_hang_up_by_value);
+      if (local_storage_hang_up_by_value) {
+        if (Object.values(local_storage_hang_up_by_value).indexOf(completedReservationSid) > -1) {
+          localStorage.removeItem('hang_up_by');
+        }
+      }
     };
 
     const handleReservationUpdated = (event, reservation) => {
