@@ -94,7 +94,8 @@ class DirectoryItem extends React.Component {
             <CallButton
             icon="Call"
             onClick={this.onWarmTransferClick}
-            themeOverride={this.props.theme.WorkerDirectory.ItemActionButton}
+            variant='secondary'
+            size='small'
             title={templates.WarmTransferTooltip()}
             />
             }
@@ -102,7 +103,8 @@ class DirectoryItem extends React.Component {
             <IconButton
                 icon="Transfer"
                 onClick={this.onColdTransferClick}
-                themeOverride={this.props.theme.WorkerDirectory.ItemActionButton}
+                variant='secondary'
+                size='small'
                 title={templates.ColdTransferTooltip()}
             />
             </ButtonContainer>
