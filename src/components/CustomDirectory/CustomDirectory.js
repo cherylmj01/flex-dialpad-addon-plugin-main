@@ -20,7 +20,7 @@ import DirectoryItem from './DirectoryItem';
         if (!searchTerm) {
             return true;
         }
-        return entry.name.includes(searchTerm);
+        return entry.name.toLowerCase().includes(searchTerm.toLowerCase());
         })
     }
 

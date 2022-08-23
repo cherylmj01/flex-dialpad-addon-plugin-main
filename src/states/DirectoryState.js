@@ -11,7 +11,7 @@ const initialState = {
 };
 
 function getDirectoryList() {
-    return fetch('https://directorylist-9412.twil.io/directory')
+    return fetch(process.env.REACT_APP_DIRECTORY_URL)
     .then((response) => response.json())
     .catch((err) => {
       return `Error: ${err}`;

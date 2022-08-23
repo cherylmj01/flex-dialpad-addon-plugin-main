@@ -19,11 +19,7 @@ export const ItemInnerContainer = styled(FlexBox)`
   padding-right: 12px;
   color: inherit;
   outline: none;
-  height: 44px;
   background: none;
-  border: none;
-  border-style: solid;
-  border-width: 0px 0px 1px 0px;
   ${(props) => props.theme.WorkerDirectory.Item}
   &:hover, &:focus-within {
     & .Twilio-WorkerDirectory-ButtonContainer {
@@ -44,8 +40,6 @@ export const ButtonContainer = styled("div")`
 export const ItemContainer = styled(FlexBox)`
   flex-grow: 1;
   overflow-y: auto;
-  border-style: solid;
-  border-width: 1px 0 0 0;
   ${(props) => props.theme.WorkerDirectory.ItemsContainer}
 `;
 
