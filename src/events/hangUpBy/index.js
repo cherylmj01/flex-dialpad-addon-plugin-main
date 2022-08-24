@@ -19,16 +19,21 @@ export const taskWrapup = async (task) => {
   }
   
   switch (currentHangUpBy) {
+    case HangUpBy.CompletedExternalWarmTransfer:
+      // If the task has the destination attribute, this was a warm transfer
+      currentHangUpBy = HangUpBy.ExternalWarmTransfer;
+      HangUpByHelper.setHangUpBy(task.sid, currentHangUpBy);
+      await HangUpByHelper.setHangUpByAttribute(task.taskSid, task.attributes, currentHangUpBy);
+      break;
     case HangUpBy.ColdTransfer:
     case HangUpBy.ExternalColdTransfer:
       break;
     case HangUpBy.ExternalWarmTransfer:
-      // If there's no customer at this point, they hung up on us
-      if (!HangUpByHelper.hasCustomerJoined(task)) {
-        currentHangUpBy = HangUpBy.Customer;
-        HangUpByHelper.setHangUpBy(task.sid, currentHangUpBy);
-        await HangUpByHelper.setHangUpByAttribute(task.taskSid, task.attributes, currentHangUpBy);
-      }
+      // If we get here, it means the customer hung up before the agent could complete the warm transfer
+      // Or, the external party left before the call ended, and the customer ended the call later.
+      currentHangUpBy = HangUpBy.Customer;
+      HangUpByHelper.setHangUpBy(task.sid, currentHangUpBy);
+      await HangUpByHelper.setHangUpByAttribute(task.taskSid, task.attributes, currentHangUpBy);
       break;
     case HangUpBy.WarmTransfer:
       // If there's no other worker but we got here, someone hung up and it wasn't us!

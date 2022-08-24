@@ -25,12 +25,12 @@ export const beforeHangupCall = (payload) => {
     if (!HangUpByHelper.hasExternalJoined(task)) {
       // No external participant here, so the xfer must've aborted.
       HangUpByHelper.setHangUpBy(payload.sid, HangUpBy.Agent);
-    } else if (!HangUpByHelper.hasCustomerJoined(task)) {
-      // No customer here, so they must've left early!
-      HangUpByHelper.setHangUpBy(payload.sid, HangUpBy.Customer);
+    } else {
+      // Temporary value that we use to discern between agent completing an external warm transfer
+      // versus a customer hanging up on one being attempted.
+      // We need this because with external transfers, at the time of wrapup, no participants are joined.
+      HangUpByHelper.setHangUpBy(payload.sid, HangUpBy.CompletedExternalWarmTransfer);
     }
-    
-    // don't change it otherwise
     
     return;
   }
@@ -59,6 +59,12 @@ export const beforeCompleteTask = async (payload) => {
   
   if (!currentHangUpBy) {
     currentHangUpBy = HangUpBy.Customer;
+    HangUpByHelper.setHangUpBy(payload.sid, currentHangUpBy);
+  }
+  
+  if (currentHangUpBy === HangUpBy.CompletedExternalWarmTransfer) {
+    // We shouldn't get here, but added a safety net so this value doesn't get saved.
+    currentHangUpBy = HangUpBy.ExternalWarmTransfer;
     HangUpByHelper.setHangUpBy(payload.sid, currentHangUpBy);
   }
   

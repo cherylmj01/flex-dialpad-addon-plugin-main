@@ -29,23 +29,8 @@ export const hasExternalJoined = (task) => {
   return false;
 }
 
-export const hasCustomerJoined = (task) => {
-  // Task passed to us may not have updated conference info
-  let conference = Flex.Manager.getInstance().store.getState().flex.conferences.states[task.taskSid];
-  
-  if (conference) {
-    const joinedCustomers = conference.participants.filter(p => p.participantType === "customer" && p.status === "joined");
-    
-    if (joinedCustomers.length > 0) {
-      return true;
-    }
-  }
-  
-  return false;
-}
-
 export const hasAnotherNonWorkerJoined = (task) => {
-  // Task passed to us may not have updated conference info
+  // Task passed to us from taskCompleted event may not have updated conference info
   let conference = Flex.Manager.getInstance().store.getState().flex.conferences.states[task.taskSid];
   
   if (conference) {
@@ -60,11 +45,8 @@ export const hasAnotherNonWorkerJoined = (task) => {
 }
 
 export const hasAnotherWorkerJoined = (task) => {
-  // Task passed to us may not have updated conference info
-  let conference = Flex.Manager.getInstance().store.getState().flex.conferences.states[task.taskSid];
-  
-  if ((task.incomingTransferObject || task.outgoingTransferObject) && conference) {
-    const otherJoinedWorkers = conference.participants.filter(p => p.participantType === "worker" && !p.isCurrentWorker && p.status === "joined");
+  if ((task.incomingTransferObject || task.outgoingTransferObject) && task.conference) {
+    const otherJoinedWorkers = task.conference.participants.filter(p => p.participantType === "worker" && !p.isCurrentWorker && p.status === "joined");
     
     if (otherJoinedWorkers.length > 0) {
       return true;

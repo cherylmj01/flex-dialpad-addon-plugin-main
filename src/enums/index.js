@@ -26,5 +26,6 @@ export const HangUpBy = {
     ColdTransfer: 'ColdTransfer',
     WarmTransfer: 'WarmTransfer',
     ExternalColdTransfer: 'ExternalColdTransfer',
-    ExternalWarmTransfer: 'ExternalWarmTransfer'
+    ExternalWarmTransfer: 'ExternalWarmTransfer',
+    CompletedExternalWarmTransfer: 'CompletedExternalWarmTransfer' // internal use only, not saved as attribute
 };
