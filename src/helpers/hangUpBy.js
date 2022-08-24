@@ -47,6 +47,9 @@ export const hasAnotherNonWorkerJoined = (task) => {
 }
 
 export const hasAnotherWorkerJoined = (task) => {
+  // Task passed to us from taskCompleted event may not have updated conference info
+  // But where we are called from that is actually desired
+  
   if ((task.incomingTransferObject || task.outgoingTransferObject) && task.conference) {
     const otherJoinedWorkers = task.conference.participants.filter(p => p.participantType === "worker" && !p.isCurrentWorker && p.status === "joined");
     

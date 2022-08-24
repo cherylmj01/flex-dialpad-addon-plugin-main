@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-// import styled from '@emotion/styled';
-import { Manager, withTheme, styled } from '@twilio/flex-ui';
-import { request } from '../../helpers/request';
+import { withTheme, styled } from '@twilio/flex-ui';
+import ConferenceService from '../../services/ConferenceService';
 
 const Name = styled('div')`
   font-size: 14px;
@@ -34,18 +33,22 @@ class ParticipantName extends React.Component {
       this.setState({ name: task.attributes.outbound_to || task.attributes.name });
       return;
     }
-
+    
     if (participant.participantType === 'unknown') {
-      request('external-transfer/get-call-properties', Manager.getInstance(), {
-        callSid: participant.callSid
-      }).then(response => {
-        if (response) {
-          const name = (response && response.to) || 'unknown';
+      ConferenceService.getCallProperties(participant.callSid)
+        .then(response => {
+          if (response) {
+            const name = (response && response.to) || 'Unknown';
+            this.setState({ name });
+          }
+        })
+        .catch(_error => {
+          const name = 'Unknown';
           this.setState({ name });
-        }
-      });
+        });
+      
     } else {
-      this.setState({ name: participant.worker ? participant.worker.fullName : 'unknown' });
+      this.setState({ name: participant.worker ? participant.worker.fullName : 'Unknown' });
     }
   }
 

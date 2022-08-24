@@ -4,41 +4,23 @@
   https://github.com/trogers-twilio/plugin-external-conference-warm-transfer
 
 */
-import { ConferenceParticipant, Manager } from '@twilio/flex-ui';
-import { fetchJsonWithReject } from './index';
+import { ConferenceParticipant } from '@twilio/flex-ui';
+import ApiService from './ApiService';
 
 
-class ConferenceService {
-
-  manager = Manager.getInstance();
-
-  serverlessDomain = process.env.REACT_APP_SERVICE_BASE_URL;
-
-  buildBody(encodedParams) {
-    return Object.keys(encodedParams).reduce((result, paramName, idx) => {
-      if (encodedParams[paramName] === undefined) {
-        return result;
-      }
-      if (idx > 0) {
-        return `${result}&${paramName}=${encodedParams[paramName]}`;
-      }
-      return `${paramName}=${encodedParams[paramName]}`;
-    }, '')
-  }
+class ConferenceService extends ApiService {
 
   _toggleParticipantHold = async (conference, participantSid, hold) => {
-    console.debug('Trying to hold the participants');
-
     return new Promise((resolve, reject) => {
 
       const encodedParams = {
         conference,
-        participantSid,
+        participant: participantSid,
         hold,
         Token: encodeURIComponent(this.manager.user.token)
       }
 
-      return fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/hold-conference-participant`,
+      this.fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/hold-conference-participant`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -58,17 +40,16 @@ class ConferenceService {
   }
 
   setEndConferenceOnExit = async (conference, participantSid, endConferenceOnExit) => {
-
     return new Promise((resolve, reject) => {
 
       const encodedParams = {
         conference,
-        participantSid,
+        participant: participantSid,
         endConferenceOnExit,
         Token: encodeURIComponent(this.manager.user.token)
       }
 
-      return fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/update-conference-participant`,
+      this.fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/update-conference-participant`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -86,9 +67,6 @@ class ConferenceService {
   }
 
   addParticipant = async (taskSid, from, to) => {
-
-    console.debug('Trying to add participant');
-
     return new Promise((resolve, reject) => {
 
       const encodedParams = {
@@ -98,7 +76,7 @@ class ConferenceService {
         Token: encodeURIComponent(this.manager.user.token)
       };
 
-      return fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/add-conference-participant`,
+      this.fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/add-conference-participant`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -165,11 +143,11 @@ class ConferenceService {
 
       const encodedParams = {
         conference,
-        participantSid,
+        participant: participantSid,
         Token: encodeURIComponent(this.manager.user.token)
       };
 
-      return fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/remove-conference-participant`,
+      this.fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/remove-conference-participant`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -188,48 +166,52 @@ class ConferenceService {
   }
 
   getCallProperties = async (callSid) => {
-
-    if (callSid) {
-
+    return new Promise((resolve, reject) => {
       const encodedParams = {
         callSid,
         Token: encodeURIComponent(this.manager.user.token)
       };
-
-      console.log('zzzy3')
-
-      console.log('zzzy', `${this.serverlessDomain}/external-transfer/get-call-properties`)
-      console.log('zzzy', this.buildBody(encodedParams))
-
-      return fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/get-call-properties`,
+  
+      this.fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/get-call-properties`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: this.buildBody(encodedParams)
         })
-        .then(resp => console.log('The call properties are', resp))
-        .catch(error => console.log('There is an error', error));
-    }
+        .then(resp => {
+          console.log('The call properties are', resp);
+          resolve(resp);
+        })
+        .catch(error => {
+          console.log('There is an error', error);
+          reject(error);
+        });
+    });
   }
 
-  coldTransfer = async (callSid) => {
-
-    console.debug('Testing for Cheryl and Twilio');
-
-    const encodedParams = {
-      callSid,
-      Token: encodeURIComponent(this.manager.user.token)
-    };
-
-    return fetchJsonWithReject(`${this.serverlessDomain}/cold-transfer`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: this.buildBody(encodedParams)
-      })
-      .then(resp => console.log('The response is', resp.json()))
-      .then(data => console.log('Data', data))
-      .catch(error => console.log('There is an error', error));
+  coldTransfer = async (callSid, to) => {
+    return new Promise((resolve, reject) => {
+      const encodedParams = {
+        callSid,
+        to,
+        Token: encodeURIComponent(this.manager.user.token)
+      };
+  
+      this.fetchJsonWithReject(`${this.serverlessDomain}/cold-transfer`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: this.buildBody(encodedParams)
+        })
+        .then(resp => {
+          console.log('The response is', resp);
+          resolve(resp);
+        })
+        .catch(error => {
+          console.log('There is an error', error);
+          reject(error);
+        });
+    });
   }
 
 
@@ -238,38 +220,3 @@ class ConferenceService {
 const conferenceService = new ConferenceService();
 
 export default conferenceService;
-
-
-// return new Promise((resolve, reject) => {
-
-    //   request('external-transfer/add-conference-participant', this.manager, {
-    //     taskSid,
-    //     from,
-    //     to
-    //   }).then(response => {
-    //     console.log('Participant added:\r\n  ', response);
-    //     resolve(response.callSid);
-    //   })
-    //     .catch(error => {
-    //       console.error(`Error adding participant ${to}\r\n`, error);
-    //       reject(error);
-    //     });
-
-    // });
-
-  // _toggleParticipantHold = (conference, participantSid, hold) => {
-  //   return new Promise((resolve, reject) => {
-
-  //     request('external-transfer/hold-conference-participant', this.manager, {
-  //       conference,
-  //       participant: participantSid,
-  //       hold
-  //     }).then(response => {
-  //       console.log(`${hold ? 'Hold' : 'Unhold'} successful for participant`, participantSid);
-  //       resolve();
-  //     }).catch(error => {
-  //       console.error(`Error ${hold ? 'holding' : 'unholding'} participant ${participantSid}\r\n`, error);
-  //       reject(error);
-  //     })
-  //   })
-  // }

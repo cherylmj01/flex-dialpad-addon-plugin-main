@@ -2,7 +2,7 @@ import { Actions, Notifications, StateHelper } from '@twilio/flex-ui';
 import { acceptInternalTask, rejectInternalTask, isInternalCall, holdCall } from './internalCall';
 import * as ExternalTransferActions from './externalTransfer';
 import * as HangUpByActions from './hangUpBy';
-import ConferenceService from '../helpers/ConferenceService';
+import ConferenceService from '../services/ConferenceService';
 import { CustomNotifications } from '../notifications';
 
 export default (manager) => {
@@ -33,7 +33,7 @@ export default (manager) => {
 
   Actions.addListener('beforeHoldParticipant', (payload, abortFunction) => {
     const { participantType, targetSid: participantSid, task } = payload;
-
+    
     if (participantType !== 'unknown') {
       return;
     }
@@ -46,7 +46,7 @@ export default (manager) => {
 
   Actions.addListener('beforeUnholdParticipant', (payload, abortFunction) => {
     const { participantType, targetSid: participantSid, task } = payload;
-
+    
     if (participantType !== 'unknown') {
       return;
     }
