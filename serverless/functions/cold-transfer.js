@@ -18,6 +18,7 @@ exports.handler = TokenValidator(async (context, event, callback) => {
 
   const {
     callSid,
+    to
   } = event;
 
   snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -33,7 +34,7 @@ exports.handler = TokenValidator(async (context, event, callback) => {
       await client
       .calls(callSid)
       .update({
-        twiml: '<Response><Say>Ahoy there, welcome to Twilio</Say></Response>'
+        twiml: `<Response><Dial>${to}</Dial></Response>`
       }).then(call => console.log(call.to));
 
       return { 

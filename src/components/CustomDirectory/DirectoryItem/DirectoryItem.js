@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  Actions,
   IconButton,
   UserCard,
   templates,
@@ -19,12 +20,14 @@ class DirectoryItem extends React.Component {
 
     onWarmTransferClick = (e) => {
         this.props.onTransferClick({ mode: "WARM" });
-        this.addConferenceParticipant();  
+        this.addConferenceParticipant();
+        Actions.invokeAction("HideDirectory");
     };
 
     onColdTransferClick = async (e) => {
         this.props.onTransferClick({ mode: "COLD" });
-        this.doColdTransfer();  
+        this.doColdTransfer();
+        Actions.invokeAction("HideDirectory");
     };
 
     addConferenceParticipant = async () => {
@@ -61,11 +64,11 @@ class DirectoryItem extends React.Component {
     }
 
     doColdTransfer = async () => {
-      
+        const to = this.props.item.phone;
         const { task } = this.props;
         const callSid = task.attributes.call_sid;
         try {
-            await conferenceService.coldTransfer(callSid);
+            await conferenceService.coldTransfer(callSid, to);
         }
         catch(error){
             console.error('Error while doing Cold Transfer:', error);
