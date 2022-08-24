@@ -1,64 +1,35 @@
 import { Actions, Notifications, StateHelper } from '@twilio/flex-ui';
-import { acceptInternalTask, rejectInternalTask, isInternalCall, toggleHoldInternalCall } from './internalCall';
-import { kickExternalTransferParticipant } from './externalTransfer';
+import { acceptInternalTask, rejectInternalTask, isInternalCall, holdCall } from './internalCall';
+import * as ExternalTransferActions from './externalTransfer';
+import * as HangUpByActions from './hangUpBy';
 import ConferenceService from '../helpers/ConferenceService';
 import { CustomNotifications } from '../notifications';
 
 export default (manager) => {
 
   Actions.addListener('beforeAcceptTask', (payload, abortFunction) => {
-
     const reservation = payload.task.sourceObject;
 
     if (isInternalCall(payload)) {
-
       abortFunction();
-
       acceptInternalTask({ reservation, payload });
-
     }
-
-  })
+  });
 
   Actions.addListener('beforeRejectTask', (payload, abortFunction) => {
-
     if (isInternalCall(payload)) {
-
       abortFunction();
-
       rejectInternalTask({ manager, payload });
-
     }
-
-  })
-
-  const holdCall = (payload, hold) => {
-    return new Promise((resolve, reject) => {
-
-      const task = payload.task;
-
-      if (isInternalCall(payload)) {
-
-        toggleHoldInternalCall({
-          task, manager, hold, resolve, reject
-        });
-
-      } else {
-
-        resolve();
-
-      }
-
-    })
-  }
+  });
 
   Actions.addListener('beforeHoldCall', (payload) => {
     return holdCall(payload, true)
-  })
+  });
 
   Actions.addListener('beforeUnholdCall', (payload) => {
     return holdCall(payload, false)
-  })
+  });
 
   Actions.addListener('beforeHoldParticipant', (payload, abortFunction) => {
     const { participantType, targetSid: participantSid, task } = payload;
@@ -88,21 +59,18 @@ export default (manager) => {
   });
 
   Actions.addListener('beforeKickParticipant', (payload, abortFunction) => {
-
     const { participantType } = payload;
 
     if (
       participantType !== "transfer" &&
       participantType !== 'worker'
     ) {
-
       abortFunction();
-
-      kickExternalTransferParticipant(payload);
-
+      ExternalTransferActions.kickExternalTransferParticipant(payload);
     }
-
-  })
+    
+    HangUpByActions.beforeKickParticipant(payload);
+  });
 
   Actions.addListener('beforeHangupCall', async (payload, abortFunction) => {
     const { conference, taskSid } = payload.task;
@@ -147,7 +115,35 @@ export default (manager) => {
       if (updatedConference.participants.some(participantsOnHold)) {
         Notifications.showNotification(CustomNotifications.FailedHangupNotification);
         abortFunction();
+        return;
       }
     }
-  })
+    
+    HangUpByActions.beforeHangupCall(payload);
+  });
+  
+  Actions.addListener("beforeTransferTask", (payload) => {
+    HangUpByActions.beforeTransferTask(payload);
+  });
+  
+  Actions.addListener("beforeCompleteTask", async (payload) => {
+    await HangUpByActions.beforeCompleteTask(payload);
+  });
+  
+  Actions.registerAction("CustomExternalTransferTask", (payload) => {
+     /* payload schema:
+     {
+       task: ITask,
+       mode: COLD | WARM,
+       to: string,
+       from: string
+     }
+     */
+     
+     if (payload.mode == 'COLD') {
+       ExternalTransferActions.doColdTransfer(payload);
+     } else if (payload.mode == 'WARM') {
+       ExternalTransferActions.doWarmTransfer(payload);
+     }
+  });
 }

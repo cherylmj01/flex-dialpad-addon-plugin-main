@@ -145,8 +145,6 @@ class ConferenceService {
 
   coldTransfer = async (callSid, to) => {
 
-    console.debug('Testing for Cheryl and Twilio');
-
     const encodedParams = {
       callSid,
       to,

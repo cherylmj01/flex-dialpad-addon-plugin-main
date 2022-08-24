@@ -10,7 +10,6 @@ import {
 } from '@twilio/flex-ui';
 import { ButtonContainer, CallButton, ItemInnerContainer } from '../CustomDirectoryComponents';
 import { WorkerMarginPlaceholder } from './DirectoryItemComponents';
-import conferenceService from "../../../helpers/ConferenceService";
 
 class DirectoryItem extends React.Component {
 
@@ -20,26 +19,7 @@ class DirectoryItem extends React.Component {
 
     onWarmTransferClick = (e) => {
         this.props.onTransferClick({ mode: "WARM" });
-        this.addConferenceParticipant();
-        Actions.invokeAction("HideDirectory");
-    };
-
-    onColdTransferClick = async (e) => {
-        this.props.onTransferClick({ mode: "COLD" });
-        this.doColdTransfer();
-        Actions.invokeAction("HideDirectory");
-    };
-
-    addConferenceParticipant = async () => {
         
-        const to = this.props.item.phone;
-        const { task } = this.props;
-        const conference = task && (task.conference || {});
-        const { conferenceSid } = conference;
-
-        const mainConferenceSid = task.attributes.conference ? 
-        task.attributes.conference.sid : conferenceSid;
-
         let from;
         
         if (this.props.phoneNumber) {
@@ -48,33 +28,28 @@ class DirectoryItem extends React.Component {
         else {
             from = Manager.getInstance().serviceConfiguration.outbound_call_flows.default.caller_id;
         }
+        
+        Actions.invokeAction("CustomExternalTransferTask", {
+          task: this.props.task,
+          mode: 'WARM',
+          to: this.props.item.phone,
+          from
+        });
+        
+        Actions.invokeAction("HideDirectory");
+    };
 
-        console.log(`Adding ${to} to conference`);
-
-        let participantCallSid;
-
-        try {
-            participantCallSid = await conferenceService.addParticipant(mainConferenceSid, from, to);
-            conferenceService.addConnectingParticipant(mainConferenceSid, participantCallSid, 'unknown');
-        }
-        catch(error){
-            console.error('Error adding conference participant:', error);
-        }
-
-    }
-
-    doColdTransfer = async () => {
-        const to = this.props.item.phone;
-        const { task } = this.props;
-        const callSid = task.attributes.call_sid;
-        try {
-            await conferenceService.coldTransfer(callSid, to);
-        }
-        catch(error){
-            console.error('Error while doing Cold Transfer:', error);
-        }
-
-    }
+    onColdTransferClick = async (e) => {
+        this.props.onTransferClick({ mode: "COLD" });
+        
+        Actions.invokeAction("CustomExternalTransferTask", {
+          task: this.props.task,
+          mode: 'COLD',
+          to: this.props.item.phone
+        });
+        
+        Actions.invokeAction("HideDirectory");
+    };
 
 
     render(){

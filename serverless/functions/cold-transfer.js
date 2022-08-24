@@ -26,8 +26,6 @@ exports.handler = TokenValidator(async (context, event, callback) => {
   const setTwimlVoice = async function (context, attempts) {
 
     try{
-      //let twiml = new Twilio.twiml.VoiceResponse();
-
       const client = Twilio(ACCOUNT_SID, AUTH_TOKEN);
       console.log(`Updating call ${callSid} with twiml`);
 

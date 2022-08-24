@@ -18,3 +18,13 @@ export const ParticipantType = {
     unknown: 'unknown',
     worker: 'worker'
 };
+
+export const HangUpBy = {
+    Customer: 'Customer',
+    Agent: 'Agent',
+    Consult: 'Consult',
+    ColdTransfer: 'ColdTransfer',
+    WarmTransfer: 'WarmTransfer',
+    ExternalColdTransfer: 'ExternalColdTransfer',
+    ExternalWarmTransfer: 'ExternalWarmTransfer'
+};

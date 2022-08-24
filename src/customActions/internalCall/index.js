@@ -96,3 +96,17 @@ export const toggleHoldInternalCall = (
   });
 
 }
+
+export const holdCall = (payload, hold) => {
+  return new Promise((resolve, reject) => {
+    const task = payload.task;
+    
+    if (isInternalCall(payload)) {
+      toggleHoldInternalCall({
+        task, manager, hold, resolve, reject
+      });
+    } else {
+      resolve();
+    }
+  })
+}
