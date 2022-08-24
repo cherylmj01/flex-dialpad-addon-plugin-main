@@ -1,6 +1,8 @@
 import TaskRouterService from '../services/TaskRouterService';
 import * as Flex from "@twilio/flex-ui";
 
+const STORAGE_KEY = 'hang_up_by';
+
 export const resetHangUpBy = (manager) => {
   // remove all reservations from hang_up_by that are no longer assigned
   const storageValue = getHangUpBy();
@@ -14,7 +16,7 @@ export const resetHangUpBy = (manager) => {
     }
   });
   
-  localStorage.setItem('hang_up_by', JSON.stringify(newValue));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newValue));
 }
 
 export const hasExternalJoined = (task) => {
@@ -57,7 +59,7 @@ export const hasAnotherWorkerJoined = (task) => {
 }
 
 export const getHangUpBy = () => {
-  const storageValue = localStorage.getItem('hang_up_by');
+  const storageValue = localStorage.getItem(STORAGE_KEY);
   
   if (!storageValue) {
     return {};
@@ -80,8 +82,8 @@ export const setHangUpBy = (reservationSid, value) => {
     [reservationSid]: value
   };
   
-  localStorage.setItem('hang_up_by', JSON.stringify(newValue));
-  console.log(`Set hang_up_by for ${reservationSid} to ${value}`, newValue);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newValue));
+  console.log(`Set ${STORAGE_KEY} for ${reservationSid} to ${value}`, newValue);
 }
 
 export const setHangUpByAttribute = async (taskSid, taskAttributes, value, destination) => {
@@ -113,7 +115,7 @@ export const clearHangUpBy = (reservationSid) => {
   
   if (storage[reservationSid]) {
     delete storage[reservationSid];
-    localStorage.setItem('hang_up_by', JSON.stringify(storage));
-    console.log(`Removed hang_up_by value for ${reservationSid}`, storage);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+    console.log(`Removed ${STORAGE_KEY} value for ${reservationSid}`);
   }
 }
