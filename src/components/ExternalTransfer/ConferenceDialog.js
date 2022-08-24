@@ -56,31 +56,21 @@ const ConferenceDialog = (props) => {
   }
   
   const addConferenceParticipant = async () => {
-    const { task } = props;
-    const conference = task && (task.conference || {});
-    const { conferenceSid } = conference;
-  
-    const mainConferenceSid = task.attributes.conference ? 
-      task.attributes.conference.sid : conferenceSid;
-  
     let from;
+    
     if (props.phoneNumber) {
-      from = props.phoneNumber
-    } else {
-      from = Manager.getInstance().serviceConfiguration.outbound_call_flows.default.caller_id;
+        from = props.phoneNumber
+      }
+    else {
+        from = Manager.getInstance().serviceConfiguration.outbound_call_flows.default.caller_id;
     }
-  
-    // Adding entered number to the conference
-    console.log(`Adding ${conferenceTo} to conference`);
-    let participantCallSid;
-    try {
-  
-      participantCallSid = await ConferenceService.addParticipant(mainConferenceSid, from, conferenceTo);
-      ConferenceService.addConnectingParticipant(mainConferenceSid, participantCallSid, 'unknown');
-  
-    } catch (error) {
-      console.error('Error adding conference participant:', error);
-    }
+    
+    Actions.invokeAction("CustomExternalTransferTask", {
+      task: props.task,
+      mode: 'WARM',
+      to: conferenceTo,
+      from
+    });
     
     setConferenceTo('');
   }

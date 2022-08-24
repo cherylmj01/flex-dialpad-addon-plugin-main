@@ -130,20 +130,22 @@ export default (manager) => {
     await HangUpByActions.beforeCompleteTask(payload);
   });
   
-  Actions.registerAction("CustomExternalTransferTask", (payload) => {
-     /* payload schema:
-     {
-       task: ITask,
-       mode: COLD | WARM,
-       to: string,
-       from: string
-     }
-     */
-     
-     if (payload.mode == 'COLD') {
-       ExternalTransferActions.doColdTransfer(payload);
-     } else if (payload.mode == 'WARM') {
-       ExternalTransferActions.doWarmTransfer(payload);
-     }
+  Actions.registerAction("CustomExternalTransferTask", async (payload) => {
+    /* payload schema:
+    {
+      task: ITask,
+      mode: COLD | WARM,
+      to: string,
+      from: string
+    }
+    */
+    
+    await HangUpByActions.CustomExternalTransferTask(payload);
+    
+    if (payload.mode == 'COLD') {
+      ExternalTransferActions.doColdTransfer(payload);
+    } else if (payload.mode == 'WARM') {
+      ExternalTransferActions.doWarmTransfer(payload);
+    }
   });
 }

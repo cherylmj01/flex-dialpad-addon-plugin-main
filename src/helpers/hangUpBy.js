@@ -17,11 +17,39 @@ export const resetHangUpBy = (manager) => {
   localStorage.setItem('hang_up_by', JSON.stringify(newValue));
 }
 
-export const hasAnotherNonWorkerJoined = (task) => {
+export const hasExternalJoined = (task) => {
+  if (task.conference) {
+    const joinedExternals = task.conference.participants.filter(p => p.participantType !== "customer" && p.participantType !== "worker" && p.status === "joined");
+    
+    if (joinedExternals.length > 0) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+export const hasCustomerJoined = (task) => {
+  // Task passed to us may not have updated conference info
   let conference = Flex.Manager.getInstance().store.getState().flex.conferences.states[task.taskSid];
   
   if (conference) {
-    const otherJoinedNonWorkers = task.conference.participants.filter(p => p.participantType !== "worker" && p.status === "joined");
+    const joinedCustomers = conference.participants.filter(p => p.participantType === "customer" && p.status === "joined");
+    
+    if (joinedCustomers.length > 0) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+export const hasAnotherNonWorkerJoined = (task) => {
+  // Task passed to us may not have updated conference info
+  let conference = Flex.Manager.getInstance().store.getState().flex.conferences.states[task.taskSid];
+  
+  if (conference) {
+    const otherJoinedNonWorkers = conference.participants.filter(p => p.participantType !== "worker" && p.status === "joined");
     
     if (otherJoinedNonWorkers.length > 0) {
       return true;
@@ -32,8 +60,11 @@ export const hasAnotherNonWorkerJoined = (task) => {
 }
 
 export const hasAnotherWorkerJoined = (task) => {
-  if ((task.incomingTransferObject || task.outgoingTransferObject) && task.conference) {
-    const otherJoinedWorkers = task.conference.participants.filter(p => p.participantType === "worker" && !p.isCurrentWorker && p.status === "joined");
+  // Task passed to us may not have updated conference info
+  let conference = Flex.Manager.getInstance().store.getState().flex.conferences.states[task.taskSid];
+  
+  if ((task.incomingTransferObject || task.outgoingTransferObject) && conference) {
+    const otherJoinedWorkers = conference.participants.filter(p => p.participantType === "worker" && !p.isCurrentWorker && p.status === "joined");
     
     if (otherJoinedWorkers.length > 0) {
       return true;
@@ -71,29 +102,28 @@ export const setHangUpBy = (reservationSid, value) => {
   console.log(`Set hang_up_by for ${reservationSid} to ${value}`, newValue);
 }
 
-export const setHangUpByAttribute = async (taskSid, taskAttributes, value) => {
+export const setHangUpByAttribute = async (taskSid, taskAttributes, value, destination) => {
   if (taskAttributes && taskAttributes.conversations && taskAttributes.conversations.hang_up_by === value) {
     // no change!
     return;
   }
   
-  // Temp:
   let newAttributes = {
-    ...taskAttributes,
     conversations: {
-      ...taskAttributes.conversations,
       hang_up_by: value
     }
   };
   
-  console.log(`Setting hang_up_by attribute for ${taskSid} to ${value}`, newAttributes);
+  if (destination) {
+    newAttributes.conversations.destination = destination;
+  }
+  
   try {
     await TaskRouterService.updateTaskAttributes(taskSid, newAttributes);
   } catch (error) {
-    console.log(`Failed to set hang_up_by attribute for ${taskSid} to ${value}`, error)
+    console.log(`Failed to set hang_up_by attribute for ${taskSid} to ${value}`, error);
   }
-  //await task.setAttributes(newAttributes);
-  console.log(`Finished setting hang_up_by attribute for ${taskSid} to ${value}`, newAttributes);
+  console.log(`Set hang_up_by attribute for ${taskSid} to ${value}`, newAttributes);
 }
 
 export const clearHangUpBy = (reservationSid) => {

@@ -21,10 +21,18 @@ export const beforeHangupCall = (payload) => {
   
   const task = TaskHelper.getTaskByTaskSid(payload.sid);
   
-  if (currentHangUpBy == "WarmExternalTransfer") {
-    // TODO set WarmExternalTransfer from + button AND CustomDirectory, set ColdExternalTransfer from CustomDirectory
-    // TODO check for unknown participant to indicate an external transfer occurred
-    // TODO if no customer participant but there is an unknown: hangupby=Customer
+  if (currentHangUpBy == HangUpBy.ExternalWarmTransfer) {
+    if (!HangUpByHelper.hasExternalJoined(task)) {
+      // No external participant here, so the xfer must've aborted.
+      HangUpByHelper.setHangUpBy(payload.sid, HangUpBy.Agent);
+    } else if (!HangUpByHelper.hasCustomerJoined(task)) {
+      // No customer here, so they must've left early!
+      HangUpByHelper.setHangUpBy(payload.sid, HangUpBy.Customer);
+    }
+    
+    // don't change it otherwise
+    
+    return;
   }
   
   if (currentHangUpBy == HangUpBy.WarmTransfer) {
@@ -50,10 +58,23 @@ export const beforeCompleteTask = async (payload) => {
   let currentHangUpBy = HangUpByHelper.getHangUpBy()[payload.sid];
   
   if (!currentHangUpBy) {
-    console.log("HangUpBy beforeCompleteTask Customer")
     currentHangUpBy = HangUpBy.Customer;
     HangUpByHelper.setHangUpBy(payload.sid, currentHangUpBy);
   }
   
   await HangUpByHelper.setHangUpByAttribute(task.taskSid, task.attributes, currentHangUpBy);
+}
+
+export const CustomExternalTransferTask = async (payload) => {
+  let newHangUpBy;
+  let { task, mode, to } = payload;
+  
+  if (mode == 'COLD') {
+    newHangUpBy = HangUpBy.ExternalColdTransfer;
+  } else if (mode == 'WARM') {
+    newHangUpBy = HangUpBy.ExternalWarmTransfer;
+  }
+  
+  HangUpByHelper.setHangUpBy(task.sid, newHangUpBy);
+  await HangUpByHelper.setHangUpByAttribute(task.taskSid, task.attributes, newHangUpBy, to);
 }
