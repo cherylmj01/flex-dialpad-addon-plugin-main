@@ -1,4 +1,5 @@
 import { request } from '../../helpers/request';
+import { Manager } from "@twilio/flex-ui";
 
 export const isInternalCall = payload => 
     payload.task.attributes.client_call === true
@@ -8,7 +9,7 @@ export const acceptInternalTask = async ({
   reservation, payload 
 }) => {
 
-    const serverlessDomain = manager.serviceConfiguration.ui_attributes.domainName;
+    const serverlessDomain = Manager.getInstance().serviceConfiguration.ui_attributes.domainName;
 
     await payload.task.setAttributes({
       ...payload.task.attributes,
