@@ -9,7 +9,6 @@ import registerCustomNotifications from './notifications';
 import { loadExternalTransferInterface } from './components/ExternalTransfer';
 import { loadInternalCallInterface } from './components/InternalCall';
 import { CustomizationProvider } from "@twilio-paste/core/customization";
-import { StylesProvider, createGenerateClassName, MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 import { resetHangUpBy } from './helpers/hangUpBy';
 import { Actions as QueueHoopsActions} from './states/QueueHoopsState';
 import { handlebars, queueHoops } from './helpers';
@@ -25,26 +24,7 @@ export default class DialpadPlugin extends FlexPlugin {
 
   init(flex, manager) {
     
-    const FlexThemeProvider = Flex.withTheme(({ theme, children }) => {
-      return (
-            <MuiThemeProvider theme={createTheme(theme)}>
-                <StylesProvider generateClassName={createGenerateClassName({
-                    productionPrefix: PLUGIN_NAME,
-                  })}>
-                    {children}
-                </StylesProvider>
-            </MuiThemeProvider>
-      )
-    });
-    
     Flex.setProviders({
-        CustomProvider: (RootComponent) => (props) => {
-            return (
-                <FlexThemeProvider>
-                    <RootComponent {...props} />
-                </FlexThemeProvider>
-            );
-        },
         PasteThemeProvider: CustomizationProvider,
     });
 

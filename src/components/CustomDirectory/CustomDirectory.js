@@ -1,7 +1,9 @@
 import * as React from "react";
-import { Tab, templates, withTaskContext } from '@twilio/flex-ui';
+import { templates, withTaskContext } from '@twilio/flex-ui';
+import {Box} from '@twilio-paste/core/box';
+import {Input} from '@twilio-paste/core/input';
 import {
-  TabContainer, InputContainer, StyledInput, ItemContainer
+  TabContainer, ItemContainer
 } from './CustomDirectoryComponents';
 import DirectoryItem from './DirectoryItem';
 
@@ -38,13 +40,18 @@ import DirectoryItem from './DirectoryItem';
 
         return (
             <TabContainer key="custom-directory-container">
-                <InputContainer key="custom-directory-input-container">
-                <StyledInput
+                <Box
+                  paddingLeft="space50"
+                  paddingRight="space50"
+                  paddingTop="space60"
+                  paddingBottom="space60">
+                <Input
                     key="custom-directory-input-field"
                     onChange={this.onSearchInputChange}
                     placeholder={templates.WorkerDirectorySearchPlaceholder()}
                 />
-                </InputContainer>
+                
+                </Box>
                 <ItemContainer
                 key="custom-directory-item-container"
                 className="Twilio-WorkerDirectory-Workers"
