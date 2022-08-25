@@ -11,7 +11,10 @@ import { loadInternalCallInterface } from './components/InternalCall';
 import { CustomizationProvider } from "@twilio-paste/core/customization";
 import { StylesProvider, createGenerateClassName, MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 import { resetHangUpBy } from './helpers/hangUpBy';
-import { withTheme } from '@twilio/flex-ui';
+import { Actions as QueueHoopsActions} from './states/QueueHoopsState';
+import { handlebars, queueHoops } from './helpers';
+import { initializeStrings } from './strings';
+import TaskRouterService from './services/TaskRouterService';
 
 const PLUGIN_NAME = 'DialpadPlugin';
 
@@ -22,7 +25,7 @@ export default class DialpadPlugin extends FlexPlugin {
 
   init(flex, manager) {
     
-    const FlexThemeProvider = withTheme(({ theme, children }) => {
+    const FlexThemeProvider = Flex.withTheme(({ theme, children }) => {
       return (
             <MuiThemeProvider theme={createTheme(theme)}>
                 <StylesProvider generateClassName={createGenerateClassName({
@@ -60,9 +63,21 @@ export default class DialpadPlugin extends FlexPlugin {
 
     resetHangUpBy(manager);
     
+    initializeStrings();
     registerCustomActions(manager);
     registerCustomEvents(manager);
     registerCustomNotifications(flex, manager);
+    
+    handlebars.registerHelpers();
+    
+    queueHoops.loadHoops(QueueHoopsActions.storeQueueHoops);
+    
+    TaskRouterService.getWorkflows()
+      .then(console.log('Workflows were retrieved'));
+    
+    // Removing the Agent tab from the transfer directory to disable
+    // transferring directly to an agent instead of a queue
+    flex.WorkerDirectoryTabs.Content.remove('workers');
   }
 
   dispatch = (f) => Flex.Manager.getInstance().store.dispatch(f);

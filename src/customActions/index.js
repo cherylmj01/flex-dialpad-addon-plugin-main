@@ -2,6 +2,7 @@ import { Actions, Notifications, StateHelper } from '@twilio/flex-ui';
 import { acceptInternalTask, rejectInternalTask, isInternalCall, holdCall } from './internalCall';
 import * as ExternalTransferActions from './externalTransfer';
 import * as HangUpByActions from './hangUpBy';
+import * as InternalTransferActions from './internalTransfer';
 import ConferenceService from '../services/ConferenceService';
 import { CustomNotifications } from '../notifications';
 
@@ -122,8 +123,19 @@ export default (manager) => {
     HangUpByActions.beforeHangupCall(payload);
   });
   
-  Actions.addListener("beforeTransferTask", (payload) => {
+  Actions.addListener("beforeTransferTask", async (payload, abortAction) => {
+    let abortTransfer = await InternalTransferActions.beforeTransferTask(payload);
+    
+    if (abortTransfer) {
+      abortAction();
+      return;
+    }
+    
     HangUpByActions.beforeTransferTask(payload);
+  });
+  
+  Actions.addListener("beforeShowDirectory", (payload) => {
+    InternalTransferActions.beforeShowDirectory(payload);
   });
   
   Actions.addListener("beforeCompleteTask", async (payload) => {

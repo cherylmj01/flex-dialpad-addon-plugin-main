@@ -12,9 +12,9 @@ const request = async (path, manager, params) =>{
         }
     };
 
-    const { REACT_APP_SERVICE_BASE_URL } = process.env;
-    console.log('REQUEST BASE URL: ', REACT_APP_SERVICE_BASE_URL, ' PATH:', path);
-    const resp = await fetch(`${REACT_APP_SERVICE_BASE_URL}/${path}`, options)
+    const serverlessDomain = manager.serviceConfiguration.ui_attributes.domainName;
+    console.log('REQUEST BASE URL: ', serverlessDomain, ' PATH:', path);
+    const resp = await fetch(`https://${serverlessDomain}/${path}`, options)
     return (await resp.json())
 }
 

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-// import styled from '@emotion/styled';
 import {
   Actions,
   IconButton,
@@ -46,7 +45,12 @@ class ParticipantActionsButtons extends React.Component {
   onHoldParticipantClick = () => {
     const { participant, task } = this.props;
     const { callSid, workerSid } = participant;
-    const participantType = participant.participantType;
+    let participantType = participant.participantType;
+    
+    // TODO - TEMP FIX: Flex UI 2.0 returns an undefined participantType instead of expected value "unknown"
+    if( participantType == undefined || participantType == 'undefined') participantType="unknown";
+    // END TEMP FIX
+    
     Actions.invokeAction(participant.onHold ? 'UnholdParticipant' : 'HoldParticipant', {
       participantType,
       task,

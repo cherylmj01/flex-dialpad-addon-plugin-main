@@ -8,7 +8,7 @@ export const acceptInternalTask = async ({
   reservation, payload 
 }) => {
 
-    const { REACT_APP_SERVICE_BASE_URL } = process.env;
+    const serverlessDomain = manager.serviceConfiguration.ui_attributes.domainName;
 
     await payload.task.setAttributes({
       ...payload.task.attributes,
@@ -19,7 +19,7 @@ export const acceptInternalTask = async ({
     if (typeof(reservation.task.attributes.conference) !== 'undefined') {
 
         reservation.call(reservation.task.attributes.from,
-          `${REACT_APP_SERVICE_BASE_URL}/internal-call/agent-join-conference?conferenceName=${reservation.task.attributes.conference.friendlyName}`, {
+          `https://${serverlessDomain}/internal-call/agent-join-conference?conferenceName=${reservation.task.attributes.conference.friendlyName}`, {
             accept: true
           }
         )
@@ -28,7 +28,7 @@ export const acceptInternalTask = async ({
 
         reservation.call(
             reservation.task.attributes.from,
-            `${REACT_APP_SERVICE_BASE_URL}/internal-call/agent-outbound-join?taskSid=${payload.task.taskSid}`, 
+            `https://${serverlessDomain}/internal-call/agent-outbound-join?taskSid=${payload.task.taskSid}`, 
             {
             accept: true
             }
@@ -69,12 +69,8 @@ export const toggleHoldInternalCall = (
   task, manager, hold, resolve, reject
 }) => {
 
-  console.log('Hi this is a test');
-
   const conference = task.attributes.conference ? 
   task.attributes.conference.sid : task.attributes.conferenceSid;
-
-  console.log('Hi this is a test but I did not want to test',conference);
 
   const participant = task.attributes.conference.participants ?
     task.attributes.conference.participants.worker : task.attributes.worker_call_sid;

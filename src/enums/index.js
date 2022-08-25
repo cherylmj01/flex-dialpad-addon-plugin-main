@@ -29,3 +29,13 @@ export const HangUpBy = {
     ExternalWarmTransfer: 'External Warm Transfer',
     CompletedExternalWarmTransfer: 'CompletedExternalWarmTransfer' // internal use only, not saved as attribute
 };
+
+export const DaysOfWeek = [
+  'Mon',
+  'Tue',
+  'Wed',
+  'Thu',
+  'Fri',
+  'Sat',
+  'Sun'
+];

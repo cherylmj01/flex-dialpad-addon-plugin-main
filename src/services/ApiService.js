@@ -11,7 +11,7 @@ export default class ApiService {
 
   constructor() {
     this.manager = Flex.Manager.getInstance();
-    this.serverlessDomain = process.env.REACT_APP_SERVICE_BASE_URL;
+    this.serverlessDomain = this.manager.serviceConfiguration.ui_attributes.domainName;
   }
 
   buildBody(encodedParams) {

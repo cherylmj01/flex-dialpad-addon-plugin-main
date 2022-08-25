@@ -78,6 +78,10 @@ For more details on deploying your plugin, refer to the [deploying your plugin g
 
 Note: Common packages like `React`, `ReactDOM`, `Redux` and `ReactRedux` are not bundled with the build because they are treated as external dependencies so the plugin will depend on Flex to provide them globally.
 
+## Flex UI Configuration
+
+Before running the plugin, update your Flex configuration `ui_attributes` object to include a string property named `domainName` that is set to the domain of the serverless functions deployed as part of these instructions.
+
 ## TaskRouter
 
 Before using this plugin you must first create a dedicated TaskRouter workflow or just add the following filter to your current workflow. Make sure it is part of your Flex Task Assignment workspace.
@@ -107,8 +111,8 @@ and then
 
 3. Copy `.env.example` to `.env` and set the following variables:
 
-    - REACT_APP_SERVICE_BASE_URL: your Twilio Functions base url (this will be available after you deploy your functions). In local development environment, it could be your localhost base url. 
     - REACT_APP_TASK_CHANNEL_SID: the voice channel SID 
+    - REACT_APP_DIRECTORY_URL: the custom directory JSON URL
 
   **Note**: Remember that .env is for front-end use so do not add any type of key/secret variable to them. When developing, the .env.development is used while the .env.production is used when building and deploying the plugin. Also, just variables starting with the name *REACT_APP_* will work.
   

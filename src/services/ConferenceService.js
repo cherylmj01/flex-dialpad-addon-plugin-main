@@ -17,10 +17,10 @@ class ConferenceService extends ApiService {
         conference,
         participant: participantSid,
         hold,
-        Token: encodeURIComponent(this.manager.user.token)
+        Token: encodeURIComponent(this.manager.store.getState().flex.session.ssoTokenPayload.token)
       }
 
-      this.fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/hold-conference-participant`,
+      this.fetchJsonWithReject(`https://${this.serverlessDomain}/external-transfer/hold-conference-participant`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -46,10 +46,10 @@ class ConferenceService extends ApiService {
         conference,
         participant: participantSid,
         endConferenceOnExit,
-        Token: encodeURIComponent(this.manager.user.token)
+        Token: encodeURIComponent(this.manager.store.getState().flex.session.ssoTokenPayload.token)
       }
 
-      this.fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/update-conference-participant`,
+      this.fetchJsonWithReject(`https://${this.serverlessDomain}/external-transfer/update-conference-participant`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -73,10 +73,10 @@ class ConferenceService extends ApiService {
         taskSid,
         from,
         to,
-        Token: encodeURIComponent(this.manager.user.token)
+        Token: encodeURIComponent(this.manager.store.getState().flex.session.ssoTokenPayload.token)
       };
 
-      this.fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/add-conference-participant`,
+      this.fetchJsonWithReject(`https://${this.serverlessDomain}/external-transfer/add-conference-participant`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -144,10 +144,10 @@ class ConferenceService extends ApiService {
       const encodedParams = {
         conference,
         participant: participantSid,
-        Token: encodeURIComponent(this.manager.user.token)
+        Token: encodeURIComponent(this.manager.store.getState().flex.session.ssoTokenPayload.token)
       };
 
-      this.fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/remove-conference-participant`,
+      this.fetchJsonWithReject(`https://${this.serverlessDomain}/external-transfer/remove-conference-participant`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -169,10 +169,10 @@ class ConferenceService extends ApiService {
     return new Promise((resolve, reject) => {
       const encodedParams = {
         callSid,
-        Token: encodeURIComponent(this.manager.user.token)
+        Token: encodeURIComponent(this.manager.store.getState().flex.session.ssoTokenPayload.token)
       };
   
-      this.fetchJsonWithReject(`${this.serverlessDomain}/external-transfer/get-call-properties`,
+      this.fetchJsonWithReject(`https://${this.serverlessDomain}/external-transfer/get-call-properties`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -194,10 +194,10 @@ class ConferenceService extends ApiService {
       const encodedParams = {
         callSid,
         to,
-        Token: encodeURIComponent(this.manager.user.token)
+        Token: encodeURIComponent(this.manager.store.getState().flex.session.ssoTokenPayload.token)
       };
   
-      this.fetchJsonWithReject(`${this.serverlessDomain}/cold-transfer`,
+      this.fetchJsonWithReject(`https://${this.serverlessDomain}/cold-transfer`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

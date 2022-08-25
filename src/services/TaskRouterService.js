@@ -1,6 +1,18 @@
 import ApiService from './ApiService';
 
+let workflows = null
+
 class TaskRouterService extends ApiService {
+	
+	// does a one time fetch for workflows per session
+	// since workflow configuration seldom changes
+	
+	async getWorkflows() {
+		if(workflows) return workflows
+
+		workflows = await this.#getWorkflows();
+		return workflows
+	}
 
 	async updateTaskAttributes(taskSid, attributesUpdate) {
 
@@ -13,13 +25,13 @@ class TaskRouterService extends ApiService {
 	#updateTaskAttributes = (taskSid, attributesUpdate) => {
 
 		const encodedParams = {
-			Token: encodeURIComponent(this.manager.user.token),
+			Token: encodeURIComponent(this.manager.store.getState().flex.session.ssoTokenPayload.token),
 			taskSid: encodeURIComponent(taskSid),
 			attributesUpdate: encodeURIComponent(attributesUpdate)
 		};
 
 		return this.fetchJsonWithReject(
-			`${this.serverlessDomain}/update-task-attributes`,
+			`https://${this.serverlessDomain}/update-task-attributes`,
 			{
 				method: 'post',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -30,6 +42,24 @@ class TaskRouterService extends ApiService {
 				...response,
 			};
 		});
+	};
+	
+	#getWorkflows = () => {
+		const encodedParams = {
+			Token: encodeURIComponent(this.manager.store.getState().flex.session.ssoTokenPayload.token)
+		};
+		
+		return this.fetchJsonWithReject(
+		`https://${this.serverlessDomain}/list-workflows`,
+			{
+				method: 'post',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: this.buildBody(encodedParams)
+			})
+			.then((response) => {
+				const { workflows } = response;
+				return workflows;
+			});
 	};
 }
 
