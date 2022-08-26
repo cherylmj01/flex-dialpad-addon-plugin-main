@@ -28,7 +28,7 @@ class ConferenceService extends ApiService {
         })
         .then(response => {
           console.log(`${hold ? 'Hold' : 'Unhold'} successful for participant`, participantSid);
-          resolve(response.sid);
+          resolve(response.participantsResponse.sid);
         })
         .catch(error => {
           console.error(`Error ${hold ? 'holding' : 'unholding'} participant ${participantSid}\r\n`, error);
@@ -56,7 +56,7 @@ class ConferenceService extends ApiService {
           body: this.buildBody(encodedParams)
         }).then(response => {
           console.log(`Participant ${participantSid} updated:\r\n`, response);
-          resolve(response.sid);
+          resolve(response.participantsResponse.sid);
         })
         .catch(error => {
           console.error(`Error updating participant ${participantSid}\r\n`, error);
@@ -84,7 +84,7 @@ class ConferenceService extends ApiService {
         })
         .then(response => {
           console.log('Participant added:\r\n  ', response);
-          resolve(response.callSid);
+          resolve(response.participantsResponse.callSid);
         })
         .catch(error => {
           console.log('There is an error while adding participan', error);
@@ -155,7 +155,7 @@ class ConferenceService extends ApiService {
         })
         .then(response => {
           console.log(`Participant ${participantSid} removed from conference`);
-          resolve(response.callSid);
+          resolve(participantSid);
         })
         .catch(error => {
           console.error(`Error removing participant ${participantSid} from conference\r\n`, error);
@@ -179,8 +179,8 @@ class ConferenceService extends ApiService {
           body: this.buildBody(encodedParams)
         })
         .then(resp => {
-          console.log('The call properties are', resp);
-          resolve(resp);
+          console.log('The call properties are', resp.callProperties);
+          resolve(resp.callProperties);
         })
         .catch(error => {
           console.log('There is an error', error);

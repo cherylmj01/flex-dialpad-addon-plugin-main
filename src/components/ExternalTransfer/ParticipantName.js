@@ -33,8 +33,8 @@ class ParticipantName extends React.Component {
       this.setState({ name: task.attributes.outbound_to || task.attributes.name });
       return;
     }
-    
-    if (participant.participantType === 'unknown') {
+    // TODO TEMP FIX below
+    if (!participant.participantType || participant.participantType === 'unknown') {
       ConferenceService.getCallProperties(participant.callSid)
         .then(response => {
           if (response) {
