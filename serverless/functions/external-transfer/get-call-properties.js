@@ -1,6 +1,6 @@
 const TokenValidator = require('twilio-flex-token-validator').functionValidator;
-const ParameterValidator = require(Runtime.getFunctions()['common/parameter-validator'].path);
-const VoiceOperations = require(Runtime.getFunctions()['common/voice'].path);
+const ParameterValidator = require(Runtime.getFunctions()['common/helpers/parameter-validator'].path);
+const VoiceOperations = require(Runtime.getFunctions()['common/twilio-wrappers/voice'].path);
 
 exports.handler = TokenValidator(async (context, event, callback) => {
 

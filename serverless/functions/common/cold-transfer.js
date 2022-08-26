@@ -1,15 +1,14 @@
 const TokenValidator = require('twilio-flex-token-validator').functionValidator;
 const ParameterValidator = require(Runtime.getFunctions()['common/helpers/parameter-validator'].path);
-const ConferenceOperations = require(Runtime.getFunctions()['common/twilio-wrappers/conference-participant'].path);
+const VoiceOperations = require(Runtime.getFunctions()['common/twilio-wrappers/voice'].path);
 
 exports.handler = TokenValidator(async (context, event, callback) => {
 
   const scriptName = arguments.callee.name;
   const response = new Twilio.Response();
   const requiredParameters = [
-      { key: 'conference', purpose: 'unique ID of conference to update' },
-      { key: 'participant', purpose: 'unique ID of participant to update' },
-      { key: 'hold', purpose: 'whether to hold or unhold the participant' },
+      { key: 'callSid', purpose: 'unique ID of call to update' },
+      { key: 'to', purpose: 'phone number to transfer to' },
   ];
   const parameterError = ParameterValidator.validate(context.PATH, event, requiredParameters);
 
@@ -28,25 +27,23 @@ exports.handler = TokenValidator(async (context, event, callback) => {
 
   try {
     const {
-        conference,
-        participant,
-        hold
+        callSid,
+        to
     } = event;
     
-    const result = await ConferenceOperations.holdParticipant(
+    const result = await VoiceOperations.coldTransfer(
       {
         context,
         scriptName,
-        conference,
-        participant,
-        hold: hold === 'true',
+        callSid,
+        to,
         attempts: 0
       });
 
-    const { success, participantsResponse, status } = result;
+    const { success, status } = result;
 
     response.setStatusCode(status);
-    response.setBody({ success, participantsResponse });
+    response.setBody({ success });
     callback(null, response);
 
   } catch (error) {

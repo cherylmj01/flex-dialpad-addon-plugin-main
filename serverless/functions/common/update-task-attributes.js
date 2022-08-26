@@ -1,6 +1,6 @@
 const TokenValidator = require('twilio-flex-token-validator').functionValidator;
-const ParameterValidator = require(Runtime.getFunctions()['common/parameter-validator'].path);
-const TaskOperations = require(Runtime.getFunctions()['common/taskrouter'].path);
+const ParameterValidator = require(Runtime.getFunctions()['common/helpers/parameter-validator'].path);
+const TaskOperations = require(Runtime.getFunctions()['common/twilio-wrappers/taskrouter'].path);
 
 exports.handler = TokenValidator(async function updateTaskAttributes(context, event, callback) {
 

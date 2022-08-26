@@ -197,7 +197,7 @@ class ConferenceService extends ApiService {
         Token: encodeURIComponent(this.manager.store.getState().flex.session.ssoTokenPayload.token)
       };
   
-      this.fetchJsonWithReject(`https://${this.serverlessDomain}/cold-transfer`,
+      this.fetchJsonWithReject(`https://${this.serverlessDomain}/common/cold-transfer`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

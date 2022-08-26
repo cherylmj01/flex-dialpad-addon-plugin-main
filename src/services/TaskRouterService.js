@@ -31,7 +31,7 @@ class TaskRouterService extends ApiService {
 		};
 
 		return this.fetchJsonWithReject(
-			`https://${this.serverlessDomain}/update-task-attributes`,
+			`https://${this.serverlessDomain}/common/update-task-attributes`,
 			{
 				method: 'post',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -50,7 +50,7 @@ class TaskRouterService extends ApiService {
 		};
 		
 		return this.fetchJsonWithReject(
-		`https://${this.serverlessDomain}/list-workflows`,
+		`https://${this.serverlessDomain}/internal-transfer-addons/list-workflows`,
 			{
 				method: 'post',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
