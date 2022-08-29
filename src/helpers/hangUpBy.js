@@ -90,7 +90,7 @@ export const setHangUpBy = (reservationSid, value) => {
 }
 
 export const setHangUpByAttribute = async (taskSid, taskAttributes, value, destination) => {
-  if (taskAttributes && taskAttributes.conversations && taskAttributes.conversations.hang_up_by === value) {
+  if (taskAttributes && taskAttributes.conversations && taskAttributes.conversations.hang_up_by === value && (!destination || taskAttributes.conversations.destination === destination)) {
     // no change!
     return;
   }

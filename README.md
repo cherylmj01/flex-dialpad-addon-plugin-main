@@ -9,17 +9,29 @@ The native Flex Dialpad does not support agent-to-agent direct calls or external
 
 A Twilio Flex Plugin allow you to customize the appearance and behavior of [Twilio Flex](https://www.twilio.com/flex). If you want to learn more about the capabilities and how to use the API, check out our [Flex documentation](https://www.twilio.com/docs/flex).
 
-## How it works
+## Features
 
-This plugin uses Twilio Functions and WorkerClient's createTask method to create conferences and TaskRouter tasks for orchestration in both agent-to-agent calls and external transfers features. 
+### Custom directory
 
-### Agent-to-agent direct call
+When in a call, a new "Directory" tab is added to the transfer panel to allow cold transfers (and optionally warm transfers) to custom defined contacts. Both warm and cold transfers from the directory are accomplished by calling Twilio Functions to perform the required Twilio API requests. The directory's contents are loaded via a directory JSON file. Here is an example file:
 
-This part adds a call agent section to the *Outbound Dialer Panel*. In this section, there is a dropdown where you can select the agent you want to call directly. After selecting and clicking the call button, the WorkerClient's createTask method is used to create the outbound call task having the caller agent as target. When the task is sent to this agent, the AcceptTask action is overridden so we can control all the calling process. Then, we use the reservation object inside the task payload to call the caller agent. This reservation object is part of the TaskRouter Javascript SDK bundled with Flex. The URL endpoint of this call is used and pointed to a Twilio Function that retuns a TwiML which in turns create a conference and sets the statusCallbackEvent. The latter endpoint will be used to create the called agent task.
+```
+[
+  {
+    "id" : "1",
+    "name": "Weather Phone",
+    "phone": "+13172222222",
+    "enableWarmTransfer": "true"
+  },
+  {
+    "id": "2",
+    "name": "Twilio",
+    "phone": "+18448144627"
+  }
+]
+```
 
-In the called side, the AcceptTask action is also overridden and a similar calling process is done. The difference is that the URL endpoint points to a different Twilio Function that returns a simple TwiML which in turns calls the conference created on the caller side. 
-
-This feature is based on the work on this [project](https://github.com/lehel-twilio/plugin-dialpad).
+The `enableWarmTransfer` property can be set on each contact to control whether warm transfers are allowed for that contact.
 
 ### External transfer
 
@@ -27,8 +39,26 @@ When in a call, a "plus" icon is added to the Call Canvas where you can add a ex
 
 This feature is based on the work on this [project](https://github.com/twilio-labs/plugin-flex-outbound-dialpad).
 
-# Configuration
+### Hang up by
 
+This feature writes to the `conversations.hang_up_by` task attribute to allow reporting within Flex Insights on which party ended a call. This is accomplished by adding various Flex UI action and event listeners to deduce the reason for the conversation ending.
+
+For external transfers, this also writes the `conversations.destination` task attribute to allow reporting on the phone numbers customers are being transferred to.
+
+The following values may be set for hang up by:
+- Customer
+- Agent
+- Consult _(a consulting agent left the call before a warm transfer completed)_
+- Cold Transfer
+- Warm Transfer
+- External Cold Transfer
+- External Warm Transfer
+
+### Internal transfer add-ons
+
+These features are documented [here](https://github.com/trogers-twilio/flex-internal-transfer-addons).
+
+# Configuration
 
 ## Flex Plugin
 
@@ -80,7 +110,9 @@ Note: Common packages like `React`, `ReactDOM`, `Redux` and `ReactRedux` are not
 
 ## Flex UI Configuration
 
-Before running the plugin, update your Flex configuration `ui_attributes` object to include a string property named `domainName` that is set to the domain of the serverless functions deployed as part of these instructions.
+Before running the plugin, [update your Flex configuration](https://www.twilio.com/docs/flex/developer/ui/configuration) `ui_attributes` object to include the following additional string properties:
+- `domainName`: the domain of the serverless functions deployed as part of these instructions
+- `directoryUrl`: the URL of the custom transfer directory JSON
 
 ## TaskRouter
 
@@ -105,21 +137,13 @@ and then
 
 # How to use
 
-1. Setup all dependencies above: the workflow and Twilio CLI packages.
+1. Setup all dependencies above: the workflow, Flex UI configuration, and Twilio CLI packages.
 
 2. Clone this repository
 
-3. Copy `.env.example` to `.env` and set the following variables:
+3. run `npm install`
 
-    - REACT_APP_TASK_CHANNEL_SID: the voice channel SID 
-    - REACT_APP_DIRECTORY_URL: the custom directory JSON URL
-
-  **Note**: Remember that .env is for front-end use so do not add any type of key/secret variable to them. When developing, the .env.development is used while the .env.production is used when building and deploying the plugin. Also, just variables starting with the name *REACT_APP_* will work.
-  
-
-4.  run `npm install`
-
-5. copy `./serverless/.env.sample` to `./serverless/.env` and populate the appropriate environment variables.
+4. copy `./serverless/.env.sample` to `./serverless/.env` and populate the appropriate environment variables.
 
 ```
 ACCOUNT_SID=
@@ -129,7 +153,7 @@ TWILIO_WORKSPACE_SID=
 TWILIO_NUMBER=
 ```
 
-6.  cd into ./serverless/ then run 
+5. cd into ./serverless/ then run 
 
 `npm install` 
 
@@ -138,19 +162,6 @@ and then
 `twilio serverless:deploy` 
 
 (optionally you can run locally with `twilio serverless:start --ngrok=""`)
-
-# Known issues
-
-1. When in an agent-to-agent call, the transfer button is disabled. 
-2. When in an agent-to-agent call, an external transfer is done correctly but the UI does not reflect what is going on.
-
-# Old issues 
-
-**Note**: If you are suffering from any of the following issues, please update your plugin with the last version of this repository. 
-
-1. In the first versions, the environment variables were set by the UI Configuration (please refer to this [documentation](https://www.twilio.com/docs/flex/ui/configuration)) but it was overriding some other variables with no relation to this plugin. Because of that, some features inside Flex were breaking. Now, there are two files (.env.development and .env.production) that gather all the environment variables. 
-2. Before, the worker's contact_uri was extracted from `manager.user.identity` which has its problems depending on its format. It is now being extract from `manager.workerClient.attributes.contact_url` directly.  (Thanks to [@hgs-berlee](https://github.com/hgs-berlee) who pointed that out and suggested this solution) 
-3. Before, when in an external transfer, the hold/unhold button was executing these actions on the first participant and not on the correct one. Now, this is fixed.
 
 ## Disclaimer
 This software is to be considered "sample code", a Type B Deliverable, and is delivered "as-is" to the user. Twilio bears no responsibility to support the use or implementation of this software.
