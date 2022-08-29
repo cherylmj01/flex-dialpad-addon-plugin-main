@@ -33,7 +33,8 @@ export const loadExternalTransferInterface = (flex, manager) => {
 	flex.CallCanvas.Content.add(<ConferenceMonitor
 		key="conference-monitor"
 	/>, { sortOrder: 999 });
-// TODO TEMP FIX below
+
+	// Flex UI 2.0 returns an undefined participantType instead of expected value "unknown"
 	const isUnknownParticipant = props => (!props.participant.participantType || props.participant.participantType === 'unknown');
 	const isNotTransferParticipant = props => props.participant.participantType !== 'transfer';
 

@@ -33,7 +33,7 @@ class ParticipantName extends React.Component {
       this.setState({ name: task.attributes.outbound_to || task.attributes.name });
       return;
     }
-    // TODO TEMP FIX below
+    // Flex UI 2.0 returns an undefined participantType instead of expected value "unknown"
     if (!participant.participantType || participant.participantType === 'unknown') {
       ConferenceService.getCallProperties(participant.callSid)
         .then(response => {

@@ -1,5 +1,4 @@
 import { Actions, Notifications, StateHelper } from '@twilio/flex-ui';
-import { acceptInternalTask, rejectInternalTask, isInternalCall, holdCall } from './internalCall';
 import * as ExternalTransferActions from './externalTransfer';
 import * as HangUpByActions from './hangUpBy';
 import * as InternalTransferActions from './internalTransfer';
@@ -7,30 +6,6 @@ import ConferenceService from '../services/ConferenceService';
 import { CustomNotifications } from '../notifications';
 
 export default (manager) => {
-
-  Actions.addListener('beforeAcceptTask', (payload, abortFunction) => {
-    const reservation = payload.task.sourceObject;
-
-    if (isInternalCall(payload)) {
-      abortFunction();
-      acceptInternalTask({ reservation, payload });
-    }
-  });
-
-  Actions.addListener('beforeRejectTask', (payload, abortFunction) => {
-    if (isInternalCall(payload)) {
-      abortFunction();
-      rejectInternalTask({ manager, payload });
-    }
-  });
-
-  Actions.addListener('beforeHoldCall', (payload) => {
-    return holdCall(payload, true)
-  });
-
-  Actions.addListener('beforeUnholdCall', (payload) => {
-    return holdCall(payload, false)
-  });
 
   Actions.addListener('beforeHoldParticipant', (payload, abortFunction) => {
     const { participantType, targetSid: participantSid, task } = payload;

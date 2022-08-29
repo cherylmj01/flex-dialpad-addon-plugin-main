@@ -1,10 +1,8 @@
-import * as HangUpByHelper from '../../helpers/hangUpBy';
+import { hangUpBy as HangUpByHelper } from '../../helpers';
 import { TaskHelper } from "@twilio/flex-ui";
 import { HangUpBy } from '../../enums';
 
 export const beforeTransferTask = (payload) => {
-  // TODO: Merge this with the internal xfer logic, since it could abort the transfer.
-  console.log('beforeTransferTask', payload);
   HangUpByHelper.setHangUpBy(payload.sid, payload.options.mode === "COLD" ? HangUpBy.ColdTransfer : HangUpBy.WarmTransfer);
 }
 
@@ -15,8 +13,6 @@ export const beforeKickParticipant = (payload) => {
 }
 
 export const beforeHangupCall = (payload) => {
-  console.log('beforeHangupCall', payload);
-  
   const currentHangUpBy = HangUpByHelper.getHangUpBy()[payload.sid];
   
   const task = TaskHelper.getTaskByTaskSid(payload.sid);
@@ -52,7 +48,6 @@ export const beforeHangupCall = (payload) => {
 }
 
 export const beforeCompleteTask = async (payload) => {
-  console.log('beforeCompleteTask', payload);
   const task = TaskHelper.getTaskByTaskSid(payload.sid);
   
   let currentHangUpBy = HangUpByHelper.getHangUpBy()[payload.sid];

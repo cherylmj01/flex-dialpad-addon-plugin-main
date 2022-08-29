@@ -7,7 +7,6 @@ import registerCustomActions from './customActions';
 import registerCustomEvents from './events';
 import registerCustomNotifications from './notifications';
 import { loadExternalTransferInterface } from './components/ExternalTransfer';
-import { loadInternalCallInterface } from './components/InternalCall';
 import { CustomizationProvider } from "@twilio-paste/core/customization";
 import { resetHangUpBy } from './helpers/hangUpBy';
 import { Actions as QueueHoopsActions} from './states/QueueHoopsState';
@@ -28,8 +27,8 @@ export default class DialpadPlugin extends FlexPlugin {
         PasteThemeProvider: CustomizationProvider,
     });
 
-    loadExternalTransferInterface.bind(this)(flex, manager)
-    loadInternalCallInterface.bind(this)(flex, manager)
+    loadExternalTransferInterface.bind(this)(flex, manager);
+    
     this.registerReducers(manager);
     this.dispatch(Action.getDirectory());
 
@@ -50,10 +49,14 @@ export default class DialpadPlugin extends FlexPlugin {
     
     handlebars.registerHelpers();
     
-    queueHoops.loadHoops(QueueHoopsActions.storeQueueHoops);
-    
-    TaskRouterService.getWorkflows()
-      .then(console.log('Workflows were retrieved'));
+    try {
+      queueHoops.loadHoops(QueueHoopsActions.storeQueueHoops);
+      
+      TaskRouterService.getWorkflows()
+        .then(console.log('Workflows were retrieved'));
+    } catch (error) {
+      console.log('Unable to initialize internal transfer addons', error);
+    }
     
     // Removing the Agent tab from the transfer directory to disable
     // transferring directly to an agent instead of a queue

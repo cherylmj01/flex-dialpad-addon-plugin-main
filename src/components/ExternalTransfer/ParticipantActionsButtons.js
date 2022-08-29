@@ -47,9 +47,8 @@ class ParticipantActionsButtons extends React.Component {
     const { callSid, workerSid } = participant;
     let participantType = participant.participantType;
     
-    // TODO - TEMP FIX: Flex UI 2.0 returns an undefined participantType instead of expected value "unknown"
+    // Flex UI 2.0 returns an undefined participantType instead of expected value "unknown"
     if( participantType == undefined || participantType == 'undefined') participantType="unknown";
-    // END TEMP FIX
     
     Actions.invokeAction(participant.onHold ? 'UnholdParticipant' : 'HoldParticipant', {
       participantType,

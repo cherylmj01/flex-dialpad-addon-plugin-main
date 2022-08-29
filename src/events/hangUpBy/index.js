@@ -1,4 +1,4 @@
-import * as HangUpByHelper from '../../helpers/hangUpBy';
+import { hangUpBy as HangUpByHelper } from '../../helpers';
 import { HangUpBy } from '../../enums';
 
 export const taskWrapup = async (task) => {
