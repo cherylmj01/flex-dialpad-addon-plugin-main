@@ -114,17 +114,6 @@ Before running the plugin, [update your Flex configuration](https://www.twilio.c
 - `domainName`: the domain of the serverless functions deployed as part of these instructions
 - `directoryUrl`: the URL of the custom transfer directory JSON
 
-## TaskRouter
-
-Before using this plugin you must first create a dedicated TaskRouter workflow or just add the following filter to your current workflow. Make sure it is part of your Flex Task Assignment workspace.
-
-- ensure the following matching worker expression: *task.targetWorker==worker.contact_uri*
-- ensure the priority of the filter is set to 1000 (or at least the highest in the system)
-- make sure the filter matches to a queue with Everyone on it. The default Everyone queue will work but if you want to seperate real time reporting for outbound calls, you should make a dedicated queue for it with a queue expression
-*1==1*
-
-<img width="700px" src="screenshots/outbound-filter.png"/>
-
 ## Twilio Serverless 
 
 You will need the [Twilio CLI](https://www.twilio.com/docs/twilio-cli/quickstart) and the [serverless plugin](https://www.twilio.com/docs/labs/serverless-toolkit/getting-started) to deploy the functions inside the ```serverless``` folder of this project. You can install the necessary dependencies with the following commands:
@@ -137,20 +126,21 @@ and then
 
 # How to use
 
-1. Setup all dependencies above: the workflow, Flex UI configuration, and Twilio CLI packages.
+1. Setup all dependencies above: Flex UI configuration and Twilio CLI packages.
 
 2. Clone this repository
 
 3. run `npm install`
 
-4. copy `./serverless/.env.sample` to `./serverless/.env` and populate the appropriate environment variables.
+4. copy `./serverless/.env.example` to `./serverless/.env` and populate the appropriate environment variables.
 
 ```
 ACCOUNT_SID=
 AUTH_TOKEN=
-TWILIO_WORKFLOW_SID=
 TWILIO_WORKSPACE_SID=
-TWILIO_NUMBER=
+TWILIO_SERVICE_RETRY_LIMIT=
+TWILIO_SERVICE_MIN_BACKOFF=
+TWILIO_SERVICE_MAX_BACKOFF=
 ```
 
 5. cd into ./serverless/ then run 
