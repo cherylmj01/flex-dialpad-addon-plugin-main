@@ -1,14 +1,28 @@
 import { Actions, Notifications, StateHelper } from '@twilio/flex-ui';
 import * as ExternalTransferActions from './externalTransfer';
 import * as HangUpByActions from './hangUpBy';
+import * as HoldTimeActions from './holdTime';
 import * as InternalTransferActions from './internalTransfer';
 import ConferenceService from '../services/ConferenceService';
 import { CustomNotifications } from '../notifications';
 
 export default (manager) => {
+  
+  Actions.addListener('beforeHoldCall', async (payload, abortFunction) => {
+    await HoldTimeActions.beforeHoldCall(payload);
+  });
+  
+  Actions.addListener('beforeUnholdCall', async (payload, abortFunction) => {
+    await HoldTimeActions.beforeUnholdCall(payload);
+  });
 
-  Actions.addListener('beforeHoldParticipant', (payload, abortFunction) => {
+  Actions.addListener('beforeHoldParticipant', async (payload, abortFunction) => {
     const { participantType, targetSid: participantSid, task } = payload;
+    
+    if (participantType === 'customer') {
+      await HoldTimeActions.beforeHoldCall(payload);
+      return;
+    }
     
     if (participantType !== 'unknown') {
       return;
@@ -20,8 +34,13 @@ export default (manager) => {
     return ConferenceService.holdParticipant(conferenceSid, participantSid);
   });
 
-  Actions.addListener('beforeUnholdParticipant', (payload, abortFunction) => {
+  Actions.addListener('beforeUnholdParticipant', async (payload, abortFunction) => {
     const { participantType, targetSid: participantSid, task } = payload;
+    
+    if (participantType === 'customer') {
+      await HoldTimeActions.beforeUnholdCall(payload);
+      return;
+    }
     
     if (participantType !== 'unknown') {
       return;
