@@ -54,6 +54,10 @@ The following values may be set for hang up by:
 - External Cold Transfer
 - External Warm Transfer
 
+### Hold time
+
+This feature writes the `conversations.hold_time` task attribute to override the hold time calculated by Insights. This allows excluding [automatic hold times caused by warm transfers](https://www.twilio.com/docs/flex/end-user-guide/insights/metrics/hold-time#conversations-with-transfers-and-conferences), which cause misleading hold time reporting.
+
 ### Internal transfer add-ons
 
 These features are documented [here](https://github.com/trogers-twilio/flex-internal-transfer-addons).

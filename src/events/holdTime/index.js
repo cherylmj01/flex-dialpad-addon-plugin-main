@@ -24,6 +24,8 @@ export const taskWrapup = async (task) => {
       case HangUpBy.WarmTransfer:
         // skip saving transfer-initiated hold time
         // external transfers do not auto-hold
+        // update sync doc so that wrapup service doesn't catch it
+        data = await HoldTimeHelper.updateHoldTime(reservationSid, data.holdTime);
         break;
       default:
         // add the current hold time
@@ -31,7 +33,16 @@ export const taskWrapup = async (task) => {
     }
   }
   
-  await HoldTimeHelper.writeHoldData(task.taskSid, data);
+  await HoldTimeHelper.writeHoldData(task.taskSid, data.holdTime);
   await SyncClient.closeSyncDoc();
   console.log(`Saved hold time for ${task.sid}`, data);
+}
+
+export const taskCompleted = async (task) => {
+  let currentHangUpBy = HangUpByHelper.getHangUpBy()[task.sid];
+  
+  if ((currentHangUpBy === HangUpBy.ColdTransfer || currentHangUpBy === HangUpBy.WarmTransfer) && task && task.attributes && task.attributes.conversations && task.attributes.conversations.hold_time && task.attributes.conversations.hold_time > 0) {
+    // reset hold time for the next segment
+    await HoldTimeHelper.writeHoldData(task.taskSid, 0);
+  }
 }

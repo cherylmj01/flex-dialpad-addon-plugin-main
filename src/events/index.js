@@ -9,5 +9,6 @@ export default (manager) => {
   
   manager.events.addListener("taskCompleted", async (task) => {
     await HangUpByEvents.taskCompleted(task);
+    await HoldTimeEvents.taskCompleted(task);
   });
 }

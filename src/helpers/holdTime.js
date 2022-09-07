@@ -41,6 +41,13 @@ export const endHold = async (reservationSid) => {
   
   const newHoldDuration = data.holdTime + currentHoldDuration;
   
+  const updated = await updateHoldTime(reservationSid, newHoldDuration);
+  return updated;
+}
+
+export const updateHoldTime = async (reservationSid, newHoldDuration) => {
+  const key = `${reservationSid}_HoldTime`;
+  
   const newData = {
     currentHoldStart: 0,
     holdTime: newHoldDuration
@@ -50,10 +57,10 @@ export const endHold = async (reservationSid) => {
   return updated;
 }
 
-export const writeHoldData = async (taskSid, data) => {
+export const writeHoldData = async (taskSid, holdTime) => {
   const newAttributes = {
     conversations: {
-      hold_time: data.holdTime
+      hold_time: holdTime
     }
   }
   
