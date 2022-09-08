@@ -1,4 +1,4 @@
-import SyncClient from "../services/SyncClient";
+import SyncClient from "../services/SyncIPCClient";
 import TaskRouterService from '../services/TaskRouterService';
 
 /*

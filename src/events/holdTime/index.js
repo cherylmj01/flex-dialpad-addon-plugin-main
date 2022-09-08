@@ -1,7 +1,7 @@
 import { hangUpBy as HangUpByHelper } from '../../helpers';
 import { HangUpBy } from '../../enums';
 import { holdTime as HoldTimeHelper } from '../../helpers';
-import SyncClient from "../../services/SyncClient";
+import SyncClient from "../../services/SyncIPCClient";
 
 export const taskWrapup = async (task) => {
   const key = `${task.sid}_HoldTime`;
