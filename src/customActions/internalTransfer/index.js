@@ -1,4 +1,4 @@
-import { Manager, Notifications, WorkerDirectoryTabs } from '@twilio/flex-ui';
+import { Manager, Notifications, TaskHelper, WorkerDirectoryTabs } from '@twilio/flex-ui';
 
 import { transferQueues, queueHoops } from '../../helpers'
 import TaskRouterService from '../../services/TaskRouterService';
@@ -7,8 +7,23 @@ import { CustomNotifications } from '../../notifications';
 export const beforeShowDirectory = (payload) => {
   // This logic is for filtering out queues that are not eligible for
   // transfer from the queue transfer directory
-  const queueFilterExpression = transferQueues.getQueueFilterExpression();
-  console.debug('queueFilterExpression:', queueFilterExpression);
+  let task = payload?.task;
+  if (!task) {
+    const flexState = manager.store.getState().flex;
+    let selectedTaskSid = flexState?.view?.selectedTaskSid;
+  
+    if (!selectedTaskSid) {
+      const windowPathParts = window.location.pathname.split('/');
+      selectedTaskSid = windowPathParts.find(p => p.toUpperCase().startsWith('WR'));
+    }
+    task = TaskHelper.getTaskByTaskSid(selectedTaskSid);
+  }
+  
+  const queueName = task?.queueName;
+  const taskChannelUniqueName = task?.taskChannelUniqueName;
+  
+  const queueFilterExpression = transferQueues.getQueueFilterExpression(queueName, taskChannelUniqueName);
+  console.debug('beforeShowDirectory, queueFilterExpression:', queueFilterExpression);
   
   if (queueFilterExpression) {
     WorkerDirectoryTabs.defaultProps.hiddenQueueFilter = queueFilterExpression;

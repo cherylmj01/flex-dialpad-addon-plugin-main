@@ -60,7 +60,15 @@ export default class DialpadPlugin extends FlexPlugin {
     
     // Removing the Agent tab from the transfer directory to disable
     // transferring directly to an agent instead of a queue
-    flex.WorkerDirectoryTabs.Content.remove('workers');
+    const internalTransferAddonsPluginConfig = manager.serviceConfiguration.ui_attributes?.internalTransferAddonsPlugin;
+    const isAgentTransferDirectoryDisabled = internalTransferAddonsPluginConfig?.agentTransferDirectory?.isGloballyDisabled;
+    const agentTransferDirectoryEnabledSkills = internalTransferAddonsPluginConfig?.agentTransferDirectory?.enabledSkills || [];
+    const workerSkills = manager.workerClient.attributes?.routing?.skills || [];
+    const isAgentTransferDirectorEnabledForMe = workerSkills.some(s => agentTransferDirectoryEnabledSkills.includes(s));
+    
+    if (isAgentTransferDirectoryDisabled && !isAgentTransferDirectorEnabledForMe) {
+      flex.WorkerDirectoryTabs.Content.remove('workers');
+    }
   }
 
   dispatch = (f) => Flex.Manager.getInstance().store.dispatch(f);
