@@ -1,4 +1,4 @@
 import * as FlexPlugin from '@twilio/flex-plugin';
-import DialpadPlugin from './DialpadPlugin';
+import AgentAddonsPlugin from './AgentAddonsPlugin';
 
-FlexPlugin.loadPlugin(DialpadPlugin);
+FlexPlugin.loadPlugin(AgentAddonsPlugin);

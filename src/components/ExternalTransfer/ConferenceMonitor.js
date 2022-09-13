@@ -51,7 +51,7 @@ class ConferenceMonitor extends React.Component {
       // My worker has clearly left since previously joining
       // Time to stop monitoring at this point. Covers warm and cold transfers and generally stops Flex UI from tinkering
       // once the agent is done with the call.
-      console.debug('dialpad-addon, ConferenceMonitor, componentDidUpdate: My participant left. Time to STOP monitoring this task/conference');
+      console.debug('agent-addons, ConferenceMonitor, componentDidUpdate: My participant left. Time to STOP monitoring this task/conference');
       this.setState({ stopMonitoring: true, didMyWorkerJoinYet: false });
     }
 
@@ -64,7 +64,7 @@ class ConferenceMonitor extends React.Component {
 
   shouldUpdateParticipants = (participants, liveWorkerCount) => {
     console.debug(
-      'dialpad-addon, ConferenceMonitor, shouldUpdateParticipants:',
+      'agent-addons, ConferenceMonitor, shouldUpdateParticipants:',
       liveWorkerCount <= 1 && this.hasUnknownParticipant(participants)
     );
     return liveWorkerCount <= 1 && this.hasUnknownParticipant(participants);

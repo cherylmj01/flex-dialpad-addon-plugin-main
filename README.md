@@ -1,4 +1,4 @@
-# Native Flex Dialpad Add-on 
+# Flex Agent Addons Plugin
 # Notes
 This plugin was upgraded to the latest version of the Plugin Builder (v4), now part of the Twilio CLI.
 See: https://www.twilio.com/docs/flex/developer/plugins/migrate
@@ -159,4 +159,3 @@ and then
 
 ## Disclaimer
 This software is to be considered "sample code", a Type B Deliverable, and is delivered "as-is" to the user. Twilio bears no responsibility to support the use or implementation of this software.
-# flex-dialpad-addon-plugin-main

@@ -14,9 +14,9 @@ import { handlebars, queueHoops } from './helpers';
 import { initializeStrings } from './strings';
 import TaskRouterService from './services/TaskRouterService';
 
-const PLUGIN_NAME = 'DialpadPlugin';
+const PLUGIN_NAME = 'AgentAddonsPlugin';
 
-export default class DialpadPlugin extends FlexPlugin {
+export default class AgentAddonsPlugin extends FlexPlugin {
   constructor() {
     super(PLUGIN_NAME);
   }
