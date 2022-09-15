@@ -42,6 +42,8 @@ export const doWarmTransfer = async (payload) => {
     
     try {
         if (sipTarget) {
+            // get the participant SID so that we can play a failure message to them if necessary.
+            
             let callSid;
             conference.participants.every(participant => {
                 if (participant.isCurrentWorker) {

@@ -10,6 +10,7 @@ Sync Doc format:
 */
 
 export const startHold = async (reservationSid) => {
+  console.log('HoldTime: Starting hold for reservation', reservationSid);
   const key = `${reservationSid}_HoldTime`;
   
   const doc = await SyncClient.getSyncDoc(key);
@@ -26,6 +27,7 @@ export const startHold = async (reservationSid) => {
 }
 
 export const endHold = async (reservationSid) => {
+  console.log('HoldTime: Ending hold for reservation', reservationSid);
   const key = `${reservationSid}_HoldTime`;
   
   const doc = await SyncClient.getSyncDoc(key);
@@ -65,4 +67,5 @@ export const writeHoldData = async (taskSid, holdTime) => {
   }
   
   await TaskRouterService.updateTaskAttributes(taskSid, newAttributes);
+  console.log(`Saved hold time for ${taskSid}`, newAttributes);
 }

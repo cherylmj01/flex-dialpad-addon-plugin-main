@@ -126,6 +126,7 @@ export default (manager) => {
     }
     
     HangUpByActions.beforeTransferTask(payload);
+    await HoldTimeActions.beforeTransferTask(payload);
   });
   
   Actions.addListener("beforeShowDirectory", (payload) => {

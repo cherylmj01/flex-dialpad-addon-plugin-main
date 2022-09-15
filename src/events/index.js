@@ -8,7 +8,9 @@ export default (manager) => {
   });
   
   manager.events.addListener("taskCompleted", async (task) => {
-    await HangUpByEvents.taskCompleted(task);
     await HoldTimeEvents.taskCompleted(task);
+    
+    // HangUpBy resets the value, so do this logic last
+    await HangUpByEvents.taskCompleted(task);
   });
 }

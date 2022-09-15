@@ -7,3 +7,9 @@ export const beforeHoldCall = async (payload) => {
 export const beforeUnholdCall = async (payload) => {
   await HoldTimeHelper.endHold(payload.sid);
 }
+
+export const beforeTransferTask = async (payload) => {
+  if (payload.options.mode === "WARM") {
+    await HoldTimeHelper.startHold(payload.sid);
+  }
+}
