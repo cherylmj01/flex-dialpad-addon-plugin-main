@@ -92,6 +92,35 @@ class ConferenceService extends ApiService {
         });
     })
   }
+  
+  addParticipantSip = async (taskSid, participantSid, from, to, sipTarget) => {
+    return new Promise((resolve, reject) => {
+  
+      const encodedParams = {
+        taskSid,
+        participantSid,
+        from,
+        to,
+        sipTarget,
+        Token: encodeURIComponent(this.manager.store.getState().flex.session.ssoTokenPayload.token)
+      };
+  
+      this.fetchJsonWithReject(`https://${this.serverlessDomain}/external-transfer/add-conference-participant-sip`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: this.buildBody(encodedParams)
+        })
+        .then(response => {
+          console.log('Participant added:\r\n  ', response);
+          resolve(response.participantsResponse.callSid);
+        })
+        .catch(error => {
+          console.log('There is an error while adding participan', error);
+          reject(error);
+        });
+    })
+  }
 
   addConnectingParticipant = (conferenceSid, callSid, participantType) => {
     const flexState = this.manager.store.getState().flex;
@@ -197,7 +226,33 @@ class ConferenceService extends ApiService {
         Token: encodeURIComponent(this.manager.store.getState().flex.session.ssoTokenPayload.token)
       };
   
-      this.fetchJsonWithReject(`https://${this.serverlessDomain}/common/cold-transfer`,
+      this.fetchJsonWithReject(`https://${this.serverlessDomain}/external-transfer/cold-transfer`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: this.buildBody(encodedParams)
+        })
+        .then(resp => {
+          console.log('The response is', resp);
+          resolve(resp);
+        })
+        .catch(error => {
+          console.log('There is an error', error);
+          reject(error);
+        });
+    });
+  }
+  
+  coldTransferSip = async (callSid, to, sipTarget) => {
+    return new Promise((resolve, reject) => {
+      const encodedParams = {
+        callSid,
+        to,
+        sipTarget,
+        Token: encodeURIComponent(this.manager.store.getState().flex.session.ssoTokenPayload.token)
+      };
+  
+      this.fetchJsonWithReject(`https://${this.serverlessDomain}/external-transfer/cold-transfer-sip`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

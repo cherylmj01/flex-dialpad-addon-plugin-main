@@ -142,7 +142,8 @@ export default (manager) => {
       task: ITask,
       mode: COLD | WARM,
       to: string,
-      from: string
+      from: string,
+      sipTarget?: string
     }
     */
     

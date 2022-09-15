@@ -14,10 +14,14 @@ export const kickExternalTransferParticipant = (payload) => {
 }
 
 export const doColdTransfer = async (payload) => {
-    const { task, to } = payload;
+    const { task, to, sipTarget } = payload;
     const callSid = task.attributes.call_sid;
     try {
-        await ConferenceService.coldTransfer(callSid, to);
+        if (sipTarget) {
+            await ConferenceService.coldTransferSip(callSid, to, sipTarget);
+        } else {
+            await ConferenceService.coldTransfer(callSid, to);
+        }
     }
     catch(error){
         console.error('Error while doing Cold Transfer:', error);
@@ -25,7 +29,7 @@ export const doColdTransfer = async (payload) => {
 }
 
 export const doWarmTransfer = async (payload) => {
-    const { task, to, from } = payload;
+    const { task, to, from, sipTarget } = payload;
     const conference = task && (task.conference || {});
     const { conferenceSid } = conference;
     
@@ -37,7 +41,21 @@ export const doWarmTransfer = async (payload) => {
     let participantCallSid;
     
     try {
-        participantCallSid = await ConferenceService.addParticipant(mainConferenceSid, from, to);
+        if (sipTarget) {
+            let callSid;
+            conference.participants.every(participant => {
+                if (participant.isCurrentWorker) {
+                    callSid = participant.callSid;
+                    return false;
+                }
+                
+                return true;
+            })
+            
+            participantCallSid = await ConferenceService.addParticipantSip(mainConferenceSid, callSid, from, to, sipTarget);
+        } else {
+            participantCallSid = await ConferenceService.addParticipant(mainConferenceSid, from, to);
+        }
         ConferenceService.addConnectingParticipant(mainConferenceSid, participantCallSid, 'unknown');
     }
     catch(error){

@@ -33,7 +33,8 @@ class DirectoryItem extends React.Component {
           task: this.props.task,
           mode: 'WARM',
           to: this.props.item.phone,
-          from
+          from,
+          sipTarget: this.props.item.sipTarget
         });
         
         Actions.invokeAction("HideDirectory");
@@ -45,7 +46,8 @@ class DirectoryItem extends React.Component {
         Actions.invokeAction("CustomExternalTransferTask", {
           task: this.props.task,
           mode: 'COLD',
-          to: this.props.item.phone
+          to: this.props.item.phone,
+          sipTarget: this.props.item.sipTarget
         });
         
         Actions.invokeAction("HideDirectory");

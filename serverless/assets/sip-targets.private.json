@@ -1,0 +1,38 @@
+{
+  "apple": [
+    {
+      "address": "johnson-flex-test4.sip.twilio.com",
+      "tnxSid": "1234"
+    },
+    {
+      "address": "johnson-flex-test3.sip.twilio.com",
+      "tnxSid": "1234"
+    },
+    {
+      "address": "johnson-flex-test2.sip.twilio.com",
+      "tnxSid": "1234"
+    },
+    {
+      "address": "johnson-flex-test1.sip.twilio.com",
+      "tnxSid": "1234"
+    }
+  ],
+  "orange": [
+    {
+      "address": "johnson-flex-test1.sip.twilio.com",
+      "tnxSid": "4321"
+    },
+    {
+      "address": "johnson-flex-test3.sip.twilio.com",
+      "tnxSid": "4321"
+    },
+    {
+      "address": "johnson-flex-test2.sip.twilio.com",
+      "tnxSid": "4321"
+    },
+    {
+      "address": "johnson-flex-test1.sip.twilio.com",
+      "tnxSid": "4321"
+    }
+  ]
+}
