@@ -1,9 +1,4 @@
 # Flex Agent Addons Plugin
-# Notes
-This plugin was upgraded to the latest version of the Plugin Builder (v4), now part of the Twilio CLI.
-See: https://www.twilio.com/docs/flex/developer/plugins/migrate
-
-The native Flex Dialpad does not support agent-to-agent direct calls or external transfers yet. This plugin is meant to be an add-on to the native Flex Diapad, adding both agent-to-agent direct calls and external transfers.
 
 ## Flex plugin
 
@@ -27,11 +22,20 @@ When in a call, a new "Directory" tab is added to the transfer panel to allow co
     "id": "2",
     "name": "Twilio",
     "phone": "+18448144627"
+  },
+  {
+    "id": "3",
+    "name": "My SIP Contact",
+    "phone": "+18448144627",
+    "sipTarget": "target1",
+    "enableWarmTransfer": "true"
   }
 ]
 ```
 
 The `enableWarmTransfer` property can be set on each contact to control whether warm transfers are allowed for that contact.
+
+The `sipTarget` property can be set on contacts that are dialed via SIP. The `sipTarget` is used to select the list of SIP endpoints that should be used for this contact (see the SIP Failover section below).
 
 ### External transfer
 
@@ -58,9 +62,15 @@ The following values may be set for hang up by:
 
 This feature writes the `conversations.hold_time` task attribute to override the hold time calculated by Insights. This allows excluding [automatic hold times caused by warm transfers](https://www.twilio.com/docs/flex/end-user-guide/insights/metrics/hold-time#conversations-with-transfers-and-conferences), which cause misleading hold time reporting.
 
+This feature is implemented using Twilio Sync, by creating a Sync Doc per reservation which tracks cumulative hold time for the reservation. Due to limits in place for concurrent Sync connections, no Sync client is included in this plugin. Instead, it relies on the Sync client in [the supervisor barge/coach addon](https://github.com/dremin/plugin-supervisor-barge-coach-ipc), using the Actions framework to transfer Sync data between the plugins. That plugin must be running for this functionality to work.
+
 ### Internal transfer add-ons
 
 These features are documented [here](https://github.com/trogers-twilio/flex-internal-transfer-addons).
+
+### SIP Failover
+
+The custom directory feature supports transferring to SIP targets. When doing so, the `cold-transfer-sip` and `add-conference-participant-sip` functions are used to facilitate the transfer. These functions implement a failover mechanism in case a SIP endpoint is not available. The `sip-targets.json` asset contains ordered arrays of SIP targets to use. The array used is determined by the `sipTarget` parameter passed.
 
 # Configuration
 
