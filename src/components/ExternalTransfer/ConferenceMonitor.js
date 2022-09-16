@@ -1,14 +1,16 @@
 import * as React from 'react';
 import ConferenceService from '../../services/ConferenceService';
+import { holdTime as HoldTimeHelper } from '../../helpers';
 
 class ConferenceMonitor extends React.Component {
   state = {
     liveParticipantCount: 0,
     didMyWorkerJoinYet: false,
-    stopMonitoring: false
+    stopMonitoring: false,
+    heldCustomers: []
   }
 
-  componentDidUpdate() {
+  async componentDidUpdate() {
 
     if (this.state.stopMonitoring) {
       return;
@@ -25,7 +27,7 @@ class ConferenceMonitor extends React.Component {
     } = conference;
     const liveParticipants = participants.filter(p => p.status === 'joined');
     const myActiveParticipant = liveParticipants.find(p => p.isCurrentWorker);
-
+    const heldCustomers = liveParticipants.filter(p => p.participantType === 'customer' && p.onHold === true).map(p => p.callSid);
 
     if (liveParticipantCount > 2 && this.state.liveParticipantCount <= 2) {
       if (this.shouldUpdateParticipants(participants, liveWorkerCount)) {
@@ -39,6 +41,17 @@ class ConferenceMonitor extends React.Component {
 
     if (liveParticipantCount !== this.state.liveParticipantCount) {      
       this.setState({ liveParticipantCount });
+    }
+    
+    if (!(heldCustomers.every(p => this.state.heldCustomers.includes(p)) && this.state.heldCustomers.every(p => heldCustomers.includes(p)))) {
+      // held customers array has changed
+      
+      if (heldCustomers.length < 1 && this.state.heldCustomers.length > 0) {
+        // no customers on hold, end hold timer if started.
+        await HoldTimeHelper.endHold(task.sid);
+      }
+      
+      this.setState({ heldCustomers });
     }
     
 

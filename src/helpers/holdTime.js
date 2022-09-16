@@ -59,7 +59,12 @@ export const updateHoldTime = async (reservationSid, newHoldDuration) => {
   return updated;
 }
 
-export const writeHoldData = async (taskSid, holdTime) => {
+export const writeHoldData = async (taskSid, taskAttributes, holdTime) => {
+  if (taskAttributes && taskAttributes.conversations && taskAttributes.conversations.hold_time === holdTime) {
+    // no change!
+    return;
+  }
+  
   const newAttributes = {
     conversations: {
       hold_time: holdTime
@@ -67,5 +72,5 @@ export const writeHoldData = async (taskSid, holdTime) => {
   }
   
   await TaskRouterService.updateTaskAttributes(taskSid, newAttributes);
-  console.log(`Saved hold time for ${taskSid}`, newAttributes);
+  console.log(`Set hold_time attribute for ${taskSid}`, newAttributes);
 }

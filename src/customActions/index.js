@@ -135,6 +135,7 @@ export default (manager) => {
   
   Actions.addListener("beforeCompleteTask", async (payload) => {
     await HangUpByActions.beforeCompleteTask(payload);
+    await HoldTimeActions.beforeCompleteTask(payload);
   });
   
   Actions.registerAction("CustomExternalTransferTask", async (payload) => {

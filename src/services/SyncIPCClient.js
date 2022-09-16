@@ -1,4 +1,5 @@
 import { Actions } from '@twilio/flex-ui';
+import { v4 as uuidv4 } from 'uuid';
 
 class SyncIPCClient {
   #cache;
@@ -25,7 +26,7 @@ class SyncIPCClient {
    * @param docName the Sync Document to return
    */
   getSyncDoc = async (docName) => {
-    await Actions.invokeAction("SyncDocIPC", { mode: 'GET', docName });
+    await Actions.invokeAction("SyncDocIPC", { mode: 'GET', docName, requestId: uuidv4() });
     return this.#cache[docName];
   };
 
@@ -35,7 +36,7 @@ class SyncIPCClient {
    * @param data the object to update the doc with
    */
   updateSyncDoc = async (docName, data) => {
-    await Actions.invokeAction("SyncDocIPC", { mode: 'UPDATE', docName, data });
+    await Actions.invokeAction("SyncDocIPC", { mode: 'UPDATE', docName, data, requestId: uuidv4() });
     return this.#cache[docName];
   };
 
@@ -44,7 +45,7 @@ class SyncIPCClient {
    * @param docName the doc name to close
    */
   closeSyncDoc = async (docName) => {
-    await Actions.invokeAction("SyncDocIPC", { mode: 'CLOSE', docName });
+    await Actions.invokeAction("SyncDocIPC", { mode: 'CLOSE', docName, requestId: uuidv4() });
   };
 }
 

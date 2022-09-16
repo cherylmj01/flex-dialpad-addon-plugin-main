@@ -20,7 +20,7 @@ export const taskWrapup = async (task) => {
     data = newDoc.data;
   }
   
-  await HoldTimeHelper.writeHoldData(task.taskSid, data.holdTime);
+  await HoldTimeHelper.writeHoldData(task.taskSid, task.attributes, data.holdTime);
   await SyncClient.closeSyncDoc();
 }
 
@@ -29,6 +29,6 @@ export const taskCompleted = async (task) => {
   
   if ((currentHangUpBy === HangUpBy.ColdTransfer || currentHangUpBy === HangUpBy.WarmTransfer) && task && task.attributes && task.attributes.conversations && task.attributes.conversations.hold_time && task.attributes.conversations.hold_time > 0) {
     // reset hold time for the next segment
-    await HoldTimeHelper.writeHoldData(task.taskSid, 0);
+    await HoldTimeHelper.writeHoldData(task.taskSid, task.attributes, 0);
   }
 }
