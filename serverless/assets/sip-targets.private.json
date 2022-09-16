@@ -1,38 +1,30 @@
 {
-  "apple": [
+  "target1": [
     {
-      "address": "johnson-flex-test4.sip.twilio.com",
-      "tnxSid": "1234"
+      "address": "siptarget1a.sip.twilio.com",
+      "tnxSid": "1111"
     },
     {
-      "address": "johnson-flex-test3.sip.twilio.com",
-      "tnxSid": "1234"
+      "address": "siptarget1b.sip.twilio.com",
+      "tnxSid": "2222"
     },
     {
-      "address": "johnson-flex-test2.sip.twilio.com",
-      "tnxSid": "1234"
-    },
-    {
-      "address": "johnson-flex-test1.sip.twilio.com",
-      "tnxSid": "1234"
+      "address": "siptarget1c.sip.twilio.com",
+      "tnxSid": "3333"
     }
   ],
-  "orange": [
+  "target2": [
     {
-      "address": "johnson-flex-test1.sip.twilio.com",
-      "tnxSid": "4321"
+      "address": "siptarget2a.sip.twilio.com",
+      "tnxSid": "4444"
     },
     {
-      "address": "johnson-flex-test3.sip.twilio.com",
-      "tnxSid": "4321"
+      "address": "siptarget2b.sip.twilio.com",
+      "tnxSid": "5555"
     },
     {
-      "address": "johnson-flex-test2.sip.twilio.com",
-      "tnxSid": "4321"
-    },
-    {
-      "address": "johnson-flex-test1.sip.twilio.com",
-      "tnxSid": "4321"
+      "address": "siptarget2c.sip.twilio.com",
+      "tnxSid": "6666"
     }
   ]
 }
